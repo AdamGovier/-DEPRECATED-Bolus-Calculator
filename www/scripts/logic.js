@@ -32,7 +32,7 @@ function handleModifiers(modifiers, totalDose) {
     modifiers.forEach(id => {
         const modifier = userData.getModifier(id);
         const changeDoseByPc = modifier.percentage;
-        const DoseChange = changeDoseByPc / 100 * talDose;
+        const DoseChange = changeDoseByPc / 100 * totalDose;
         modifier.increase ? totalDoseChange += DoseChange : totalDoseChange -= DoseChange; // Either increase or reduce dose.
     });
     return totalDoseChange;

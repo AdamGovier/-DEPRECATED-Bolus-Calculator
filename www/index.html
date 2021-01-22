@@ -180,7 +180,7 @@
 
             const bloodSugar = userData.get("bloodSystem") === "mg/dL" ? document.querySelector('#calculatorForm input[name="BloodSugar"]').value / 18 : document.querySelector('#calculatorForm input[name="BloodSugar"]').value;
             const carbohydrates = document.querySelector('#calculatorForm input[name="Carbohydrates"]').value;
-            
+
             if(bloodSugar) {
                 options['bloodSugar'] = bloodSugar;
             }
@@ -189,6 +189,14 @@
             }
             
             options['modifiers'] = findSelectedModifiers();
+
+            userData.addDiaryEntry({
+                bloodSugar: parseFloat(bloodSugar),
+                carbohydrates: parseFloat(carbohydrates),
+                modifiers: options['modifiers'],
+                timeStamp: new Date().getTime()
+            });
+
             document.querySelector('#units').innerText = calculateDose(options);
         }
 

@@ -204,9 +204,6 @@
         // Creates a modifier based of inputs.
         function makeMod() {
             event.preventDefault();
-            if(document.querySelector('input[name="editID"]').value) {
-                userData.deleteModifier(document.querySelector('input[name="editID"]').value); // instead of editng, remove and reinsurt
-            }
             const label = createModForm.modifierLabel.value;
             const percentageInput = parseFloat(createModForm.percentageInput.value);
             const increase = createModForm.increase.checked;
@@ -224,7 +221,13 @@
                 if (document.querySelector(`input[name="${day}"]`).checked) daysSelected.push(day);
             });
 
-            userData.addModifier({label, percentage:percentageInput, increase, autoSchedule, days: daysSelected, time});
+            let modifier = {label, percentage:percentageInput, increase, autoSchedule, days: daysSelected, time};
+            if(document.querySelector('input[name="editID"]').value) {
+                userData.deleteModifier(document.querySelector('input[name="editID"]').value); // instead of editing, remove and reinsert
+                modifier.id = parseFloat(document.querySelector('input[name="editID"]').value);
+            }
+
+            userData.addModifier(modifier);
             generateList();
             hideModWindow();
         }

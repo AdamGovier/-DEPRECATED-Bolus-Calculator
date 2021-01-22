@@ -60,7 +60,10 @@ const userData = {
             currentModifiers = JSON.parse(localStorage.getItem("modifiers"));
         }
 
-        data.id = currentModID;
+        if(data.id === undefined) {
+            data.id = currentModID;
+        }
+        
         currentModifiers.push(data);
         localStorage.setItem("modifiers", JSON.stringify(currentModifiers));
     },
@@ -85,6 +88,16 @@ const userData = {
             if(modifier.id != id) return modifier;
         });
         localStorage.setItem("modifiers", JSON.stringify(updatedModifiers));
+    },
+    addDiaryEntry : data => {
+        let currentEntries = [];
+
+        if(localStorage.getItem("diaryEntries")) {
+            currentEntries = JSON.parse(localStorage.getItem("diaryEntries"));
+        }
+
+        currentEntries.push(data);
+        localStorage.setItem("diaryEntries", JSON.stringify(currentEntries));
     }
 };
 

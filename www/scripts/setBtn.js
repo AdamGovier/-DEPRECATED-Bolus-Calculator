@@ -32,10 +32,10 @@ function setExitListeners() {
  */
 function exitWithOutSaving() {
     if(!documentChanges) {
-        window.location = document.referrer;
+        window.history.back();
     } else {
         if(confirm('Are you sure you want to exit without saving?')) {
-            window.location = document.referrer;
+            window.history.back();
         }
     }
 }

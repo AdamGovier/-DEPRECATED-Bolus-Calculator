@@ -276,7 +276,7 @@ textarea:focus, input:focus, button:focus{
 }
 
 .menu-container h5 i {
-    margin-right: 4px;
+    margin: 0 4px;
 }
 
 .dev-stamp {
@@ -433,4 +433,36 @@ input[type="time"] {
 
 legend {
     font-family: 'Montserrat', sans-serif;
+}
+
+.diaryHolder {
+    padding: 12.5px 11.25px;
+    margin: 2%;
+    display: flex;
+}
+
+.diaryHolder h5 {
+    font-weight: lighter;
+    font-size: 28px;
+}
+
+.diaryHolder h4 {
+    font-size: 28px;
+    margin-left: auto;
+}
+
+.diaryHolder span {
+    margin-left: 6px;
+}
+
+.diaryHolder.goodBG {
+    background-color: olivedrab;
+}
+
+.diaryHolder.hypoBG {
+    background-color: darkred;
+}
+
+.diaryHolder.hyperBG {
+    background-color: darkorange;
 }

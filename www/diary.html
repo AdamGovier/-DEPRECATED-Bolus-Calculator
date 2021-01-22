@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="css/ui.css">
+    <link href="assets/fontawesome-free-5.15.1-web/css/all.css" rel="stylesheet">
+    <script src="scripts/ui.js" defer></script>
+    <script src="scripts/validation.js"></script>
+    <script src="scripts/storage.js"></script>
+    <script src="cordova.js"></script>
+    <script src="scripts/logic.js"></script>
+</head>
+<body>
+    <nav>
+        <img src="assets/Icons/logo.png" id="navLogo">
+    </nav>
+    <main class="horizCentre">
+        <div class="menu-container fixed-nav-button" style="height: 70px;" onclick="exitWithOutSaving();">
+            <i class="fas fa-arrow-circle-left"></i> <h5 style="font-weight: 100; text-align: center;">22/01/2021</h5><i style="margin-left:5px;" class="far fa-calendar-alt"></i><i class="fas fa-arrow-circle-right"></i>
+        </div>
+        <img src="./assets/placeholder-graph.png" style="width: 95%; height:25vh; margin-top:20px;">
+        <div style="width: 95%; margin-top:10%;">
+            <fieldset> <!--Arguably should not use a fieldset outside of a form but the css for a fake fieldset is ugly https://stackoverflow.com/questions/2213881/is-it-possible-to-achieve-a-fieldset-like-effect-without-using-the-fieldset-->
+                <legend style="padding: 0 10px;">Average 8.2 mmol/L</legend>
+                <div id="entryContainer">
+                    <div class="diaryHolder goodBG">
+                        <h5>7.4</h5><span>mmol/L</span><h4>17:00</h4>
+                    </div>
+                    <div class="diaryHolder hypoBG">
+                        <h5>3.7</h5><span>mmol/L</span><h4>11:47</h4> 
+                    </div>
+                    <div class="diaryHolder hyperBG">
+                        <h5>13.2</h5><span>mmol/L</span><h4>14:25</h4>  
+                    </div>
+                </div>
+                <script>
+                    if(userData.get("diaryEntries")) {
+                        const diary = JSON.parse(userData.get("diaryEntries"));
+                        let output = "";
+                        diary.forEach(entry => {
+                            let date = new Date(entry.timeStamp);
+                            let bgType = "";
+                            if(entry.bloodSugar > 4 && entry.bloodSugar < 8) {
+                                bgType = "good";
+                            } else if (entry.bloodSugar < 4) {
+                                bgType = "hypo";
+                            } else {
+                                bgType = "hyper";
+                            }
+
+                            output += `<div class="diaryHolder ${bgType}BG"><h5>${entry.bloodSugar}</h5><span>mmol/L</span><h4>${date.getHours()}:${date.getMinutes()}</h4></div>`;
+                            console.log(entry);
+                        });
+                        document.querySelector('#entryContainer').innerHTML = output;
+                    }
+                </script>
+            </fieldset>
+        </div>
+    </main> 
+</body>
+</html>

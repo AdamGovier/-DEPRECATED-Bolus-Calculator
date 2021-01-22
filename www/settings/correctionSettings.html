@@ -1,0 +1,303 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correction Settings</title>
+    <link rel="stylesheet" href="../css/ui.css">
+    <style></style>
+    <link href="../assets/fontawesome-free-5.15.1-web/css/all.css" rel="stylesheet">
+    <script src="../scripts/ui.js" defer></script>
+    <script src="../scripts/storage.js"></script>
+    <script src="../scripts/setBtn.js"></script>
+    <script src="../cordova.js"></script>
+    <script>
+        function onBackKeyDown(e) {
+            if(document.querySelector('#correctionFactorCalcPanel').style.display === "flex") { // back button works from the correctionFactorCalcPanel instead of returning to previous page
+                e.preventDefault();
+                document.querySelector('#correctionFactorCalcPanel').style.display = "none";
+                document.querySelector('body').style.overflowY = 'scroll';
+            } else {
+                if(userData.get("returningUser")) {
+                    e.preventDefault();
+                    exitWithOutSaving();
+                } else { // in setup go back to doseSettings in setup
+                    window.location = "doseSettings.html";
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <nav>
+        <img src="../assets/Icons/logo.png" id="navLogo">
+    </nav>
+    <main class="horizCentre" >
+        <div class="menu-container fixed-nav-button" onclick="exitWithOutSaving();">
+            <h5><i class="fas fa-arrow-circle-left"></i> Go Back</h5>
+        </div>
+        <script>
+            if(!userData.get("returningUser")) {
+                document.querySelector('.fixed-nav-button').setAttribute("onclick", "window.location = 'doseSettings.html';");
+            }
+        </script>
+        <h1 style="margin-block-end: 20px;">Correction Settings</h1>
+        
+        <form class="horizCentre" id="correctionForm">
+            <div class="option" style="margin-top: 0;">
+                <div class="settingLabel" style="margin-bottom: 20px;">
+                    <h4 style="float: none; text-align: center;">Blood System</h4>
+                </div>
+
+                <div style="display: flex; justify-content: space-evenly; width:95%; margin-bottom: 35px;">
+                    <label class="checkBoxContainer">mmol/L
+                        <input type="checkbox" id="mmolLCheckbox" onclick="updateCheckbox('mmol/L'); showStatus(true,true);">
+                        <span class="checkmark"></span>
+                    </label>
+    
+                    <label class="checkBoxContainer">mg/dL
+                        <input type="checkbox" id="mgDlCheckbox" onclick="updateCheckbox('mg/dL'); showStatus(true,true);">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+                <script>
+                    // Saves bloodsystem and makes sure only one is checked kind of like a radio button.
+                    function updateCheckbox(type) {
+                        if(type === "mmol/L") {
+                            if(userData.get("bloodSystem") !== "mmol/L") { // divide by 18 to convert to mg/dL
+                                updateValues("mmol/L");
+                            }
+                            userData.save("bloodSystem", "mmol/L");
+
+                            // Show page content just incase initial launch
+                            document.querySelector('#mmolLCheckbox').checked = true;
+                            document.querySelector('#mgDlCheckbox').checked = false;
+                        } else {
+                            if(userData.get("bloodSystem") !== "mg/dL") { // * 18 to convert to mg/dL
+                                updateValues("mg/dL");
+                            }
+                            userData.save("bloodSystem", "mg/dL");
+
+                            // Show page content just incase initial launch
+                            document.querySelector('#mmolLCheckbox').checked = false;
+                            document.querySelector('#mgDlCheckbox').checked = true;
+                        }
+
+                        document.querySelector("#options").style.display = "block";
+                        document.querySelector("#calc-action-button").style.display = "block";
+
+                        document.querySelectorAll('.bloodSystem').forEach(element => {
+                            element.innerText = userData.get("bloodSystem");
+                        });
+
+                        // Live convert between the two systems
+                        function updateValues(type) {
+                            document.querySelectorAll('#options input[type="number"]').forEach(inputBox => {
+                                if(type === "mg/dL") {
+                                    inputBox.value = (parseFloat(inputBox.value) * 18).toFixed(1);
+                                    inputBox.setAttribute("placeholder", Math.round((parseFloat(inputBox.getAttribute("placeholder")) * 18)));
+                                } else if (type === "mmol/L") {
+                                    inputBox.value = (parseFloat(inputBox.value) / 18).toFixed(1);
+                                    inputBox.setAttribute("placeholder", (parseFloat(inputBox.getAttribute("placeholder")) / 18).toFixed(1));
+                                }
+                                
+                            });
+                        }
+                    }
+                    
+                </script>
+            </div>
+
+            <div id="options">
+                <div class="option" style="margin-top: 0;">
+                    <div class="settingLabel">
+                        <h4>Correction Factor</h4>
+                    </div>
+                    <div class="sideBySideTextbox">
+                        <input class="textbox" type="number" name="CorrectionFactor" onkeyup="validateEmptyValues();" placeholder="2.3" step=".1">
+                        <label class="bloodSystem"></label>
+                        <button type="button" onclick="document.querySelector('#correctionFactorCalcPanel').style.display = 'flex'; document.querySelector('body').style.overflowY = 'hidden';">?</button>
+                    </div>
+                    <div class="settingLabel">
+                        <p>The correction factor also known as insulin sensitivity is how much 1 unit of rapid acting insulin will generally lower your blood glucose over 2 to 4 hours.<br/><br/> <span style="color:var(--action-colour);">Press "?" if you need help calculating this.</span></p>
+                    </div>
+                </div>
+    
+                <div class="option">
+                    <div class="settingLabel">
+                        <h4>Minimum Blood Sugar</h4>
+                    </div>
+                    <div class="sideBySideTextbox">
+                        <input class="textbox" type="number" name="MinimumBloodSugar" onkeyup="validateEmptyValues();" placeholder="4" step=".1">
+                        <label class="bloodSystem" style="margin-right:10px;"></label>
+                    </div>
+                    <div class="settingLabel">
+                        <p>The minimum blood sugar/blood glucose level before starting to reduce the insulin dose.</p>
+                    </div>
+                </div>
+    
+                <div class="option">
+                    <div class="settingLabel">
+                        <h4>Maximum Blood Sugar</h4>
+                    </div>
+                    <div class="sideBySideTextbox">
+                        <input class="textbox" type="number" name="MaximumBloodSugar" onkeyup="validateEmptyValues();" placeholder="7" step=".1">
+                        <label class="bloodSystem" style="margin-right:10px;"></label>
+                    </div>
+                    <div class="settingLabel">
+                        <p>The maximum blood sugar/blood glucose level before starting to increase the insulin dose.</p>
+                    </div>
+                </div>
+    
+                <div class="option">
+                    <div class="settingLabel">
+                        <h4>Target Blood Sugar</h4>
+                    </div>
+                    <div class="sideBySideTextbox">
+                        <input class="textbox" type="number" name="TargetBloodSugar" onkeyup="validateEmptyValues();" placeholder="5.4" step=".1">
+                        <label class="bloodSystem" style="margin-right:10px;"></label>
+                    </div>
+                    <div class="settingLabel">
+                        <p>The ideal blood sugar to be after taking a correction.</p>
+                    </div>
+                </div>
+            </div>
+
+            <input id="calc-action-button" class="save-button" type="submit" value="Save">
+        </form>
+    </main>
+    <div class="horizCentre fixed-panel" id="correctionFactorCalcPanel" style="display: none;">
+        <div class="menu-container fixed-nav-button" onclick="document.querySelector('#correctionFactorCalcPanel').style.display = 'none'; document.querySelector('body').style.overflowY = 'scroll';">
+            <h5><i class="far fa-trash-alt"></i> Cancel</h5>
+        </div>
+        <h1 style="width: 80%; text-align: center;">Correction factor calculator</h1>
+        <form class="horizCentre" id="correctionCalcForm">
+            <div>
+                <div class="settingLabel">
+                    <h4>Average Daily Bolus Intake</h4>
+                </div>
+                <div class="sideBySideTextbox">
+                    <input class="textbox" type="number" name="avgBolusPerDay" placeholder="45">
+                    <label style="margin-right:10px;">Units</label>
+                </div>
+                <div class="settingLabel">
+                    <p>On a daily basis on average how many units of bolus insulin do you take?</p>
+                </div>
+            </div>
+            <div class="option">
+                <div class="settingLabel">
+                    <h4>Daily Basal Intake</h4>
+                </div>
+                <div class="sideBySideTextbox">
+                    <input class="textbox" type="number" name="avgBasalPerDay" placeholder="25">
+                    <label style="margin-right:10px;">Units</label>
+                </div>
+                <div class="settingLabel">
+                    <p>On a daily basis, how many units of basal insulin do you take?</p>
+                </div>
+            </div>
+
+            <input id="calc-action-button" class="save-button" type="submit" value="Calculate">
+        </form>
+        <script>
+            document.querySelector('#correctionCalcForm').addEventListener('submit', (event) => {
+                event.preventDefault();
+                // https://alderhey.nhs.uk/application/files/5315/1731/2400/High_blood_glucose_levels_without_ketones.pdf
+                // parseFloat is not really needed could of used parseInt but if the user wants to be really accurate I guess they have the option to.
+                // also type="number" should return a number but just in case.
+                const totalDailyDose = parseFloat(document.querySelector('input[name="avgBasalPerDay"]').value) + parseFloat(document.querySelector('input[name="avgBolusPerDay"]').value);
+                document.querySelector('input[name="CorrectionFactor"]').value = (totalDailyDose / 100);
+                document.querySelector('#correctionFactorCalcPanel').style.display = 'none'; document.querySelector('body').style.overflowY = 'scroll';
+            });
+        </script>
+    </div>
+    <script>
+        setExitListeners(); // see setBtn.js, basically checks if user makes changes and then exits without saving
+
+        if(!userData.get("bloodSystem")) {
+            // auto set default
+            document.querySelector('#mmolLCheckbox').checked = true; // default to mmolL.
+            userData.save("bloodSystem", "mmol/L");
+        } else {
+            // set all labels with the class .bloodSystem to the blood system in use
+            document.querySelectorAll('.bloodSystem').forEach(element => {
+                element.innerText = userData.get("bloodSystem");
+            });
+        }
+
+        // Load values
+        if(userData.get("bloodSystem")) {
+            updateCheckbox(userData.get("bloodSystem"))
+            loadValues([
+                {key:"correctionFactor", inputName:"CorrectionFactor"},
+                {key:"targetBloodSugar", inputName:"TargetBloodSugar"},
+                {key:"maxPost_CorrectionBgLevel", inputName:"MaximumBloodSugar"},
+                {key:"minPost_CorrectionBgLevel", inputName:"MinimumBloodSugar"}
+            ]);
+        }
+
+        function loadValues(keys) {
+            keys.forEach(load => {
+                if(userData.get(load.key)) {
+                    if(userData.get("bloodSystem") === "mg/dL") {
+                        const value = userData.get(load.key);
+                        document.querySelector(`input[name="${load.inputName}"]`).value = (parseFloat(value) * 18).toFixed(1); // set textbox value = to value of key
+                    } else {
+                        const value = userData.get(load.key);
+                        document.querySelector(`input[name="${load.inputName}"]`).value = parseFloat(value).toFixed(1); // set textbox value = to value of key
+                    }
+                }
+            });
+        }
+        
+        validateEmptyValues();
+
+        // Checks if empty values if so disables save button
+        function validateEmptyValues() {
+            let emptyValues = false;
+            let inputs = ["CorrectionFactor", "TargetBloodSugar", "MaximumBloodSugar", "MinimumBloodSugar"];
+            inputs.forEach(input => {
+                if(!getValue(input)) { // get text box values
+                    emptyValues = true;
+                }
+            })
+            if(emptyValues) {
+                setBtn(true, "Missing Values");
+            } else {
+                setBtn(false, "Save");
+            }
+        }
+
+        function saveSettings(event) {
+            event.preventDefault();
+            if(userData.get("bloodSystem") === "mg/dL") { // All of bolus calculator is stored in mmol/L and calculated on using the mmol/L System, mg/dL is purely only visual.
+                userData.saveMultiple([
+                    {key:"correctionFactor",value:getValue("CorrectionFactor") / 18},
+                    {key:"maxPost_CorrectionBgLevel",value:getValue("MaximumBloodSugar") / 18},
+                    {key:"minPost_CorrectionBgLevel",value:getValue("MinimumBloodSugar") / 18},
+                    {key:"targetBloodSugar",value:getValue("TargetBloodSugar") / 18}
+                ]);
+            } else {
+                userData.saveMultiple([
+                    {key:"correctionFactor",value:getValue("CorrectionFactor")},
+                    {key:"maxPost_CorrectionBgLevel",value:getValue("MaximumBloodSugar")},
+                    {key:"minPost_CorrectionBgLevel",value:getValue("MinimumBloodSugar")},
+                    {key:"targetBloodSugar",value:getValue("TargetBloodSugar")}
+                ]);
+            }
+
+            if(!userData.get("returningUser")) {
+                userData.save("returningUser", true);
+                window.location = "../index.html";
+            } else {
+                window.location = "settingsMenu.html";
+            }
+        }
+
+        function getValue(name) {
+            return document.querySelector(`#options input[name="${name}"]`).value;
+        }
+
+        document.querySelector('#correctionForm').addEventListener('submit', saveSettings);
+    </script>
+</body>
+</html>

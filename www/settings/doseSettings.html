@@ -1,0 +1,89 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="../css/ui.css">
+    <style></style>
+    <link href="../assets/fontawesome-free-5.15.1-web/css/all.css" rel="stylesheet">
+    <script src="../scripts/ui.js" defer></script>
+    <script src="../scripts/storage.js"></script>
+    <script src="../scripts/setBtn.js"></script>
+    <script src="../cordova.js"></script>
+    <script>
+            function onBackKeyDown(e) { // Prevent going back to legal page as you end up stuck as t&c's already accepted
+                if(!userData.get("returningUser")) {
+                    e.preventDefault();
+                } else {
+                    e.preventDefault();
+                    exitWithOutSaving();
+                }
+            }
+    </script>
+</head>
+<body>
+    <nav>
+        <img src="../assets/Icons/logo.png" id="navLogo">
+    </nav>
+    <main class="horizCentre">
+        <div class="menu-container fixed-nav-button" onclick="exitWithOutSaving();">
+            <h5><i class="fas fa-arrow-circle-left"></i> Go Back</h5>
+        </div>
+        <script>
+            if(!userData.get("returningUser")) {
+                document.querySelector('.fixed-nav-button').style.display = "none";
+            }
+        </script>
+        <h1>Dose Settings</h1>
+        
+        <form class="horizCentre">
+            <div class="option" style="margin-top: 0;">
+                <div class="settingLabel">
+                    <h4 style="float:none;">Insulin To Carb Ratio</h4>
+                </div>
+                <div class="sideBySideTextbox">
+                    <input class="textbox" type="number" name="carbRatio" onkeyup="carbRatioUpdate(); document.querySelector('#ratioHolder').innerText = this.value !== '' ? this.value : '?';" placeholder="8" step=".1">
+                    <label style="margin-right: 10px;">(1:<span id="ratioHolder"">?</span>)</label>
+                </div>
+                <div class="settingLabel">
+                    <p>How many carbohydrates per 1 unit of fast acting insulin.
+                        <br/><br/> <span style="color:var(--action-colour);">Example: 1:10 meaning 1 unit of insulin per 10 grams of carbohydrates.</span>
+                    </p>
+                </div>
+            </div>
+            <input id="calc-action-button" class="save-button" type="submit" value="Save">
+        </form>
+    </main>
+    <script>
+        setExitListeners(); // see setBtn.js, basically checks if user makes changes and then exits without saving
+        
+        if(userData.get("carbRatio")) { // load initial values
+            document.querySelector('input[name="carbRatio"]').value = userData.get("carbRatio");
+            document.querySelector('#ratioHolder').innerText = userData.get("carbRatio") !== '' ? userData.get("carbRatio"): '?';
+        }
+
+        carbRatioUpdate();
+
+        function carbRatioUpdate() { // On carbRatio input change
+            const value = document.querySelector('input[name="carbRatio"]').value;
+            if(!value) {
+                setBtn(true, "Missing Values");
+            } else {
+                setBtn(false, "Save");
+            }
+        }
+
+        function saveSettings(event) {
+            event.preventDefault();
+            userData.save("carbRatio", document.querySelector('input[name="carbRatio"]').value);
+            if(!userData.get("returningUser")) {
+                window.location = "correctionSettings.html";
+            } else {
+                window.location = "settingsMenu.html";
+            }
+        }
+
+        document.querySelector('form').addEventListener('submit', saveSettings);
+    </script>
+</body>
+</html>

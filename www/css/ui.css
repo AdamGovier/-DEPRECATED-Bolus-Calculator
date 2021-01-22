@@ -1,0 +1,436 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Ubuntu');
+
+:root {
+    --action-colour: #ef4d5a;
+    --action-colour-darker: #530209;
+    --main-bg-colour: #313131;
+    --secondary-bg-colour: #2a2a2a;
+    --tertiary-colour: #3d3d3d;
+    --quaternary-colour: #3b3b3b;
+    --text-colour-main: #e0e0e0;
+
+    --element-margin: 10px;
+    --element-margin-sides: 6.5px;
+    --element-margin-small: 0px; /*using unit px on a zero measurement to stop the calc() from multiplying by 0*/
+    --nav-height: 110px;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity:0.0;
+    }
+    100% {
+        opacity:1;
+    }
+}
+
+* { 
+    margin: 0; 
+    padding: 0;
+}
+
+body {
+    background-color: var(--main-bg-colour);
+    color: var(--text-colour-main);
+    font-family: 'Montserrat', sans-serif;
+}
+
+h1 {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 900;
+    font-size: 30px;
+
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: lighter;
+
+    margin-bottom: 20px;
+}
+
+nav {
+    display:flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    margin: var(--element-margin) var(--element-margin-sides);
+    height:var(--nav-height);
+
+    background-color: var(--secondary-bg-colour);
+}
+
+nav > #navLogo {
+    width: 85px;
+    padding: 5%;
+}
+
+main {
+    margin: var(--element-margin-small) var(--element-margin-sides) 0 var(--element-margin-sides);
+    min-height: calc(100vh - var(--nav-height) - (var(--element-margin) * 2) - var(--element-margin-small));
+
+    background-color: var(--secondary-bg-colour);
+    overflow-x: hidden;
+}
+
+main * {
+    animation: fadeIn ease 0.5s;
+}
+
+form {
+    width: 90%;
+}
+
+.horizCentre {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+textarea:focus, input:focus, button:focus{
+    outline: none;
+}
+
+.textbox {
+    background-color: var(--tertiary-colour);
+    color: var(--text-colour-main);
+    border-radius:100px; /*hide overflow*/
+
+    height: 40px;
+    padding: 0 10px;
+    width:0; /* do not mess with flex grow */
+
+    display: inline-block;
+    border: none;
+    flex-grow: 1;
+}
+
+.sideBySideTextbox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-radius: 5.5px;
+    width: 95%;
+
+    background-color: var(--tertiary-colour);
+    border: 1.5px solid white;
+}
+
+.sideBySideTextbox button {
+    padding: 0 10px;
+    height: 40px;
+
+    font-size: 1em;
+
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--action-colour);
+    border: none;
+    border-radius: 4px;
+}
+
+.sideBySideTextbox button:active {
+    color: var(--action-colour-darker);
+}
+
+.sideBySideTextbox label {
+    display: flex;
+    align-items: center;
+
+    font-family: 'Montserrat', sans-serif;
+    font-weight: lighter;
+    font-size: 85%;
+}
+
+#calc-action-button {
+    background-color: var(--action-colour);
+    color: var(--text-colour-main);
+
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    
+    padding: 13px;
+    width: 80%;
+    margin-top: 30px;
+
+    border: none;
+}
+
+.button-2nd {
+    background-color: var(--tertiary-colour);
+    color: var(--text-colour-main);
+
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+
+    margin-top: 20px;
+    width: 60%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 3px;
+}
+
+.button-2nd:active {
+    background-color: var(--quaternary-colour);
+}
+
+/*Below modified from w3Schools https://www.w3schools.com/howto/howto_css_custom_checkbox.asp */
+.checkBoxContainer {
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size:15px;
+}
+
+/* Hide the browser's default checkbox */
+.checkBoxContainer input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: var(--tertiary-colour);
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkBoxContainer input:checked ~ .checkmark {
+    background-color: var(--action-colour);
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.checkBoxContainer input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkBoxContainer .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--text-colour-main);
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+/*End of w3Schools Modified Code*/
+
+.error {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+
+    color: red;
+    
+    margin: 5px;
+}
+
+.dose {
+    margin-top: 35px;
+}
+
+/* See Ui.js for some Javascript media queries on the above .dose, reason I am using JS is I only want it to run once to avoid the virtual keyboard chaning innerHeight */
+
+.menu-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    width: 100%;
+    height:14%;
+
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--secondary-bg-colour);
+    border-bottom: solid 2px var(--tertiary-colour);
+}
+
+.menu-container h5 {
+    font-size: 17px;
+}
+
+.menu-container h5 i {
+    margin-right: 4px;
+}
+
+.dev-stamp {
+    color: var(--quaternary-colour);
+    
+    font-family: 'Ubuntu', sans-serif;
+    letter-spacing: 5px;
+}
+
+.dev-stamp-link {
+    margin-top: 28%;
+    text-decoration: none;
+}
+
+.settingLabel {
+    width: 95%;
+}
+
+.settingLabel h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size:17px;
+    font-weight: 300;
+    margin-bottom: 12px;
+}
+
+.settingLabel p {
+    margin-top: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size:13px;
+    font-weight: 100;
+}
+
+.option {
+    margin-top: 45px;
+    width: 100%;
+}
+
+.save-button {
+    margin-top: 45px !important;
+    margin-bottom: 25px !important;
+}
+
+.save-button:disabled {
+    background-color: var(--quaternary-colour) !important;
+}
+
+.contact-type {
+    color: var(--action-colour);
+    font-family: 'Montserrat', sans-serif;
+    margin: 10px;
+}
+
+.contact-type a {
+    color: white;
+    text-decoration: none;
+}
+
+.contact-type i {
+    color: var(--action-colour);
+    margin-right: 10px;
+}
+
+.legal-block {
+    background-color: white;
+    color: black;
+    padding: 4% 3%;
+    width: 90%;
+}
+
+.mod-container:first-child {
+    margin-top:30px;
+}
+
+.mod-container {
+    background-color: var(--main-bg-colour);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: auto;
+    font-size: 25px;
+    padding: 3% 3%;
+    margin: 10px 0;
+    width: 96%;
+    border-radius: 4px;
+    text-overflow: ellipsis;
+}
+
+.mod-container p {
+    margin: 0 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    flex-grow: 1;
+}
+
+.mod-container i {
+    cursor: pointer;
+}
+
+
+.fixed-panel {
+    animation: fadeIn ease 0.25s;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    background-color: var(--secondary-bg-colour);
+}
+
+.fixed-nav-button {
+    height:50px; border-top: solid 2px var(--tertiary-colour);
+}
+
+/* https://jsfiddle.net/zAFND/4/ */
+
+#ck-button {
+    margin:4px;
+    background-color:var(--tertiary-colour);
+    border-radius:4px;
+    overflow:auto;
+    float:left;
+}
+
+#ck-button label {
+    float:left;
+    width:4em;
+}
+
+#ck-button label span {
+    text-align:center;
+    padding:4px 0px;
+    display:block;
+    font-family: 'Montserrat', sans-serif;
+}
+
+#ck-button label input {
+    position:absolute;
+    top:-20px;
+}
+
+#ck-button input:checked + span {
+    background-color: var(--action-colour);
+    color: var(--text-colour-main);
+}
+
+/* end */
+
+.ck-holder {
+    display: flex;
+}
+
+input[type="time"] {
+    width: 45%;
+}
+
+legend {
+    font-family: 'Montserrat', sans-serif;
+}

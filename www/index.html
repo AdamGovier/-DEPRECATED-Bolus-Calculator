@@ -1,0 +1,199 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="css/ui.css">
+    <style></style>
+    <link href="assets/fontawesome-free-5.15.1-web/css/all.css" rel="stylesheet">
+    <script src="scripts/ui.js" defer></script>
+    <script src="scripts/validation.js"></script>
+    <script src="scripts/storage.js"></script>
+    <script defer>
+        if(!userData.get("returningUser")) {
+            window.location = "settings/legal.html";
+        }
+    </script>
+    <script src="cordova.js"></script>
+    <script>
+        function onBackKeyDown(e) {
+            if(document.querySelector('#modifierListMenu').style.display === "flex") { // back button works from the modifierListMenu instead of exiting app
+                e.preventDefault();
+                document.querySelector('#modifierListMenu').style.display = "none";
+            }
+        }
+    </script>
+    <script src="scripts/logic.js"></script>
+</head>
+<body>
+    <nav>
+        <img src="assets/Icons/logo.png" id="navLogo">
+    </nav>
+    <main class="horizCentre">
+        <h1>Bolus Calculator</h1>
+        <form class="horizCentre" id="calculatorForm">
+            <div class="sideBySideTextbox">
+                <button type="button"><i class="fas fa-minus" onclick="changeCarbs(-10);"></i></button>
+                <input class="textbox" type="number" name="Carbohydrates" value="0">
+                <label>Carbohydrates</label>
+                <button type="button" style="padding-right:0.5em;" onclick="changeCarbs(10);"><i class="fas fa-plus"></i></button>
+                <button type="button"><i class="fas fa-pizza-slice"></i></button>
+            </div>
+            <div style="width: 95%;">
+                <p id="carbError" class="error"></p>
+            </div>
+            <br>
+            <div class="sideBySideTextbox">
+                <input class="textbox" type="number" name="BloodSugar" placeholder="0.00" step=".1">
+                <label>Blood Sugar</label>
+                <button type="button" id="bloodSystem" onclick="window.location = 'settings/correctionSettings.html';"></button>
+                <script>document.querySelector('#bloodSystem').innerText = userData.get("bloodSystem");</script>
+            </div>
+            <br>
+            <button class="button-2nd" type="button" onclick="showModifierListMenu(true);">More Options</button>
+            <p id="selectedTitle" style="display: none;"><br>Selected Modifiers: <span  style="color: var(--action-colour);" id="selectedModifiers"></span></p>
+            <input id="calc-action-button" type="submit" value="Calculate Dosage" onsubmit="runCalculator(this);">
+        </form>
+        <h1 class="dose"><span id="units">0.00</span> Units</h1>
+    </main>
+    <div class="horizCentre fixed-panel" id="modifierListMenu" style="display: none;">
+        <div onclick="showModifierListMenu(false);" class="menu-container fixed-nav-button">
+            <h5><i class="fas fa-arrow-circle-left"></i> Continue</h5>
+        </div>
+        <h2 style="margin-top: 30px;" id="modifierTitle">Modifiers</h2>
+        <button class="button-2nd" id="NoModifierButton" onclick="window.location = './settings/modifiers.html';" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 170px; margin-top: 5px; display: none;"><i class="fas fa-plus" style="color: var(--action-colour);"></i> <p>Add Modifiers</p> <span><!-- Filler --></span></span></button>
+        <div style="display: flex; justify-content: center;" style="width: 100%;">
+            <div id="modifierList" style="display: flex; flex-direction: column;">
+
+            </div>
+        </div>
+        <h2 style="margin-top: 30px;" id="modifierScheduleTitle">Today's Scheduled Modifiers</h2>
+        <div style="display: flex; justify-content: center;" style="width: 100%;">
+            <div id="modifierListScheduled" style="display: flex; flex-direction: column;">
+
+            </div>
+        </div>
+        <script>
+                function showModifierListMenu(bool) {
+                    if(bool) {
+                        document.querySelector('#modifierListMenu').style.display = "flex";
+                    } else {
+                        document.querySelector('#modifierListMenu').style.display = "none";
+                    }
+                    
+                    renderSelectedModifiers(findSelectedModifiers()); // Show selected modifiers on home screen as a safety measure. 
+                }
+
+                // Gathers a list of modifiers from localStorage and then renders a list of them in the modifier window.
+                function generateList() {
+                    if(userData.get("modifiers")) {
+                        const modifiers = JSON.parse(userData.get("modifiers"));
+                        let template = "";
+                        if(modifiers.filter(a => {if(!a.autoSchedule) return a;}).length === 0) {
+                            document.querySelector('#modifierTitle').innerText = "No Modifiers Found";
+                            document.querySelector('#NoModifierButton').style.display = "block";
+                        }
+                        modifiers.filter(a => {if(!a.autoSchedule) return a;}).forEach(modifier => {
+                            template += `<div id="ck-button"><label style="width: 60vw;"><input type="checkbox" class="modifierInput" name="modifier-${modifier.id}"><span style="padding: 15px 0;">${modifier.label}</span></label></div>`;
+                        });
+                        document.querySelector('#modifierList').innerHTML = template;
+                        template = "";
+                        const date = new Date();
+                        const today = date.toString().split(' ')[0].toLowerCase();
+                        const scheduledModifiers = modifiers.filter(a => {if(a.autoSchedule && a.days.includes(today)) return a;});
+                        if(scheduledModifiers.length === 0) {
+                            document.querySelector('#modifierScheduleTitle').innerText = "Nothing Scheduled";
+                        }
+                        scheduledModifiers.forEach(modifier => {
+                            template += `<div id="ck-button"><label style="width: 60vw;"><input class="modifierInput" type="checkbox" ${isInbetween(modifier.time.start, modifier.time.end) ? "checked" : ""} name="modifier-${modifier.id}"><span><span style="margin-left: 5px;">[ ${modifier.time.start} - ${modifier.time.end} ]</span><span style="margin-right: 5px;">${modifier.label}</span></span></label></div>`;
+                        });
+                        document.querySelector('#modifierListScheduled').innerHTML = template;
+                    } else {
+                        document.querySelector('#modifierTitle').innerText = "No Modifiers Found";
+                        document.querySelector('#NoModifierButton').style.display = "block";
+                    } 
+                }
+
+                generateList();
+
+                // Checks if the current time is in between two HH:MM date strings
+                function isInbetween(start, end) {
+                    start = generateTimeInt(parseFloat(start.split(":")[0]), parseFloat(start.split(":")[1]));
+                    end = generateTimeInt(parseFloat(end.split(":")[0]), parseFloat(end.split(":")[1]));
+                    const currentDate = new Date();
+                    const currentTime = generateTimeInt(currentDate.getHours(), currentDate.getMinutes());
+                    if(currentTime >= start && currentTime <= end) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                // Converts HH:MM to a number eg 14:01 becomes 1401.
+                function generateTimeInt(hours, mins) {
+                    return (hours * 100) + mins;
+                }
+
+                // work around as for some reason findSelectedModifiers(); does not work with .modifierInput[checked="false"]
+                document.querySelectorAll('.modifierInput').forEach(modInput => { 
+                    modInput.addEventListener('change', (e) => {
+                        if(!e.srcElement.checked) {
+                            e.srcElement.removeAttribute("checked");
+                        } else {
+                            e.srcElement.setAttribute("checked", true);
+                        }
+                    });
+                })
+
+                // Returns all the selected modifiers.
+                function findSelectedModifiers() {
+                    let selectedModifierIDs = [];
+                    document.querySelectorAll('.modifierInput[checked]').forEach(modInput => {
+                        selectedModifierIDs.push(parseInt(modInput.getAttribute("name").split("-")[1])); // "modifier-ID";
+                    });
+                    return selectedModifierIDs;
+                }
+
+                function renderSelectedModifiers(selectedModifierIDs) { // Display a list of selected modifiers on main screen
+                    let htmlSnippet = "";
+                    selectedModifierIDs.forEach(id => {
+                        htmlSnippet += userData.getModifier(id).label + ",";
+                    });
+                    document.querySelector('#selectedModifiers').innerHTML = htmlSnippet.substr(0, htmlSnippet.length - 1); // remove last comma
+                    if(htmlSnippet !== "") {
+                        document.querySelector('#selectedTitle').style.display = "block";
+                    } else {
+                        document.querySelector('#selectedTitle').style.display = "none";
+                    }
+                }
+
+                renderSelectedModifiers(findSelectedModifiers()); // Run initially on document load
+        </script>
+    </div>
+
+    <script>
+        // Sends data to logic.js
+        const runCalculator = (event) => {
+            event.preventDefault();
+            
+            let options = {};
+
+            const bloodSugar = userData.get("bloodSystem") === "mg/dL" ? document.querySelector('#calculatorForm input[name="BloodSugar"]').value / 18 : document.querySelector('#calculatorForm input[name="BloodSugar"]').value;
+            const carbohydrates = document.querySelector('#calculatorForm input[name="Carbohydrates"]').value;
+            
+            if(bloodSugar) {
+                options['bloodSugar'] = bloodSugar;
+            }
+            if(carbohydrates) {
+                options['numberOfCarbs'] = carbohydrates;
+            }
+            
+            options['modifiers'] = findSelectedModifiers();
+            document.querySelector('#units').innerText = calculateDose(options);
+        }
+
+        const form = document.querySelector('#calculatorForm');
+        form.addEventListener('submit', runCalculator);
+    </script>
+</body>
+</html>

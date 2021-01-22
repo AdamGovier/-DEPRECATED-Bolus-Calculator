@@ -1,0 +1,265 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier Settings</title>
+    <link rel="stylesheet" href="../css/ui.css">
+    <link href="../assets/fontawesome-free-5.15.1-web/css/all.css" rel="stylesheet">
+    <script src="../scripts/ui.js" defer></script>
+    <script src="../scripts/storage.js"> </script>
+    <script src="../cordova.js"></script>
+    <script>
+        function onBackKeyDown(e) { // Prevent going back to legal page as you end up stuck as t&c's already accepted
+            if(document.querySelector('#createModForm').style.display === "flex") { // back button works from the createModForm instead of exiting app
+                e.preventDefault();
+                document.querySelector('#createModForm').style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+    <nav>
+        <img src="../assets/Icons/logo.png" id="navLogo">
+    </nav>
+    <main class="horizCentre">
+        <div class="menu-container" style="height:50px; border-top: solid 2px var(--tertiary-colour);" onclick="window.location = 'settingsMenu.html';">
+            <h5><i class="fas fa-arrow-circle-left"></i> Go Back</h5>
+        </div>
+        <h1>Modifier Settings</h1>
+        <p style="font-family: 'Montserrat', sans-serif; margin-bottom: 7px;">Click on a modifier to edit. </p>
+        <form class="horizCentre">
+            <div style="width: 90%;" id="modifierList">
+
+            </div>
+
+            <script>
+                // Generates list of created modifiers.
+                function generateList() {
+                    if(userData.get("modifiers")) {
+                        const modifiers = JSON.parse(userData.get("modifiers"));
+                        let template = "";
+                        modifiers.forEach(modifier => {
+                            template += `<div class="mod-container" onclick="showModMaker(true, ${modifier.id})"><i class="far fa-edit"></i><p>${modifier.label}</p><i class="${modifier.autoSchedule ? "far fa-clock" : ""}"></i></div>`;
+                        });
+                        document.querySelector('#modifierList').innerHTML = template;
+                    }   
+                }
+                // Call initially on launch.
+                generateList();
+            </script>
+            <button class="button-2nd" onclick="showModMaker(false);" type="button" style="display: flex; justify-content: space-between; align-items: center; margin-top:30px; width: 170px;"><i class="fas fa-plus" style="color: var(--action-colour);"></i> <p>New Modifier</p> <span><!-- Filler --></span></span></button>
+        </form>
+    </main>
+    <div id="modifier-maker" class="horizCentre fixed-panel" style="display: none;">
+        <div class="menu-container fixed-nav-button" onclick="deleteMod();">
+            <h5><i class="far fa-trash-alt"></i> Remove Modifier</h5>
+        </div>
+        <form class="horizCentre" style="margin-top: 30px; overflow-y:scroll;" id="createModForm">
+            <span id="errorMsg" style="color: red; margin-bottom: 20px; display: none;">Missing Values</span>
+            <div class="option" style="margin-top: 0;" >
+                <div class="settingLabel">
+                    <h4>Modifier Label</h4>
+                </div>
+                <div class="sideBySideTextbox" style="margin-left:0;">
+                    <input class="textbox" type="text" name="modifierLabel" placeholder="Label e.g. Exercise 1">
+                </div>
+            </div>
+            <div class="option" style="margin-top: 20px;">
+                <div class="settingLabel">
+                    <h4>Percentage</h4>
+                </div>
+                <div class="sideBySideTextbox" style="margin-left:0;">
+                    <input class="textbox" type="text" name="percentageInput" onkeyup="updateDeductLabel();" placeholder="10">
+                    <label style="margin-right:10px;">%</label>
+                </div>
+            </div>
+            <br>
+            <div class="ck-holder">
+                <div id="ck-button">
+                    <label style="width: 6em;">
+                       <input type="checkbox" name="increase" id="AddCheck" onclick="disable('DeductCheck', 'AddCheck');"><span>Add<br/> <span class="deduction">0%</span></span>
+                    </label>
+                </div>
+                <div id="ck-button">
+                    <label style="width: 6em;">
+                       <input type="checkbox" name="decrease" id="DeductCheck" onclick="disable('AddCheck', 'DeductCheck');" checked="true"><span>Deduct<br> <span class="deduction">0%</span></span>
+                    </label>
+                </div>
+                <script>
+                    function disable(check, recheck) { // make sure only one is checked, like a radio button
+                        document.querySelector(`#${check}`).checked = false;
+                        document.querySelector(`#${recheck}`).checked = true;
+                    }
+
+                    function updateDeductLabel() { // Change percentage label on the deduction and add label
+                        const value = document.querySelector('input[name="percentageInput"]').value;
+                        document.querySelectorAll('.deduction').forEach(label => {
+                            label.innerText = value ? value + "%" : "0%";
+                        })
+                    }
+
+                </script>
+            </div>
+            <label class="checkBoxContainer" style="margin-top: 30px;">Schedule Automatically
+                <input type="checkbox" id="scheduleCheck" name="autoSchedule" onclick="displayScheduler();">
+                <span class="checkmark"></span>
+            </label>
+
+            <div class="horizCentre" id="scheduler" style="display: none; margin-top: 20px;">
+                <fieldset class="horizCentre" style="border-color: var(--action-colour); padding: 20px 5px; width: 100%;">
+                    <legend>Scheduler</legend>
+                    <div class="ck-holder">
+                        <div id="ck-button">
+                            <label>
+                            <input type="checkbox" name="mon" checked><span>Mon</span>
+                            </label>
+                        </div>
+                        <div id="ck-button">
+                            <label>
+                            <input type="checkbox" name="tues" checked><span>Tues</span>
+                            </label>
+                        </div>
+                        <div id="ck-button">
+                            <label>
+                            <input type="checkbox" name="wed" checked><span>Wed</span>
+                            </label>
+                        </div>
+                        <div id="ck-button">
+                            <label>
+                            <input type="checkbox" name="thurs" checked><span>Thurs</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="ck-holder">
+                        <div id="ck-button">
+                            <label>
+                            <input type="checkbox" name="fri" checked><span>Fri</span>
+                            </label>
+                        </div>
+                        <div id="ck-button">
+                            <label>
+                            <input type="checkbox" name="sat"><span>Sat</span>
+                            </label>
+                        </div>
+                        <div id="ck-button">
+                            <label>
+                            <input type="checkbox" name="sun"><span>Sun</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settingLabel" style="margin-top: 20px;">
+                        <h4>Active Between</h4>
+                    </div>
+                    <div class="ck-holder" style="justify-content: space-between; width: 95%;">
+                        <input type="time" name="timeStart" value="00:00"> - <input type="time" name="timeEnd" value="23:59">
+                    </div>
+                </fieldset>
+            </div>
+
+            <input type="number" name="editID" style="display: none;">
+
+            <input id="calc-action-button" class="save-button" type="submit" value="Save">
+        </form>
+    </div>
+
+    <script>
+        // Hides modifier-maker window and empty's all the values within the inputs.
+        function hideModWindow() {
+            document.querySelector('#modifier-maker').style.display = "none";
+            document.querySelector('input[name="editID"]').value = ""; createModForm.modifierLabel.value = ""; createModForm.percentageInput.value = ""; createModForm.increase.checked = false; createModForm.decrease.checked = true;
+            createModForm.timeStart.value = "00:00"; createModForm.timeEnd.value = "00:00";
+            const daysOfTheWeek = ["mon", "tues", "wed", "thurs", "fri"]; // set all to checked = false
+            daysOfTheWeek.forEach(day => {
+                document.querySelector(`input[name="${day}"]`).checked = true;
+            });
+            document.querySelector(`input[name="sat"]`).checked = false;
+            document.querySelector(`input[name="sun"]`).checked = false;
+            document.querySelector('#errorMsg').style.display = "none";
+
+            createModForm.autoSchedule.checked = false;
+            document.querySelector('#scheduler').style.display = "none";
+
+            updateDeductLabel();
+        }
+
+        function deleteMod() { // Deletes modifier.
+            if(document.querySelector('input[name="editID"]').value) {
+                userData.deleteModifier(document.querySelector('input[name="editID"]').value);
+                generateList();
+                hideModWindow();
+            } else {
+                hideModWindow();
+            }
+        }
+
+        function displayScheduler() { // Displays the mon-sun modifier schedular.
+            const checked = document.querySelector('#scheduleCheck').checked;
+            if(checked) {
+                document.querySelector('#scheduler').style.display = "flex";
+            } else {
+                document.querySelector('#scheduler').style.display = "none";
+            }
+        }
+        
+        // Creates a modifier based of inputs.
+        function makeMod() {
+            event.preventDefault();
+            if(document.querySelector('input[name="editID"]').value) {
+                userData.deleteModifier(document.querySelector('input[name="editID"]').value); // instead of editng, remove and reinsurt
+            }
+            const label = createModForm.modifierLabel.value;
+            const percentageInput = parseFloat(createModForm.percentageInput.value);
+            const increase = createModForm.increase.checked;
+            if(!label || !percentageInput) {
+                document.querySelector('#errorMsg').style.display = "block";
+                document.querySelector('#createModForm').scrollTo(0, 0);
+                return;
+            }
+            const autoSchedule = createModForm.autoSchedule.checked;
+            let daysSelected = [];
+            const time = {start:createModForm.timeStart.value, end: createModForm.timeEnd.value};
+            const daysOfTheWeek = ["mon", "tues", "wed", "thurs", "fri", "sat", "sun"];
+
+            daysOfTheWeek.forEach(day => {
+                if (document.querySelector(`input[name="${day}"]`).checked) daysSelected.push(day);
+            });
+
+            userData.addModifier({label, percentage:percentageInput, increase, autoSchedule, days: daysSelected, time});
+            generateList();
+            hideModWindow();
+        }
+
+        // shows modifier and changes inputs if edit is applied to the selected modifiers values.
+        function showModMaker(edit, id) {
+            if(edit) {
+                document.querySelector('input[name="editID"]').value = id;
+                const modifierData = userData.getModifier(id);
+                createModForm.modifierLabel.value = modifierData.label; createModForm.percentageInput.value = modifierData.percentage; createModForm.increase.checked = modifierData.increase; createModForm.decrease.checked = !modifierData.increase;
+                updateDeductLabel();
+                createModForm.autoSchedule.checked = modifierData.autoSchedule;
+                if(modifierData.autoSchedule) {
+                    document.querySelector('#scheduler').style.display = "flex";
+                } else {
+                    document.querySelector('#scheduler').style.display = "none";
+                }
+
+                const daysOfTheWeek = ["mon", "tues", "wed", "thurs", "fri", "sat", "sun"]; // set all to checked = false
+                daysOfTheWeek.forEach(day => {
+                    document.querySelector(`input[name="${day}"]`).checked = false;
+                });
+
+                modifierData.days.forEach(day => { // set stored days to true
+                    document.querySelector(`input[name="${day}"]`).checked = true;
+                });
+
+                createModForm.timeStart.value = modifierData.time.start; createModForm.timeEnd.value = modifierData.time.end;
+            }
+            document.querySelector('#modifier-maker').style.display = "flex";
+            
+        }
+
+        const createModForm = document.querySelector('#createModForm');
+        createModForm.addEventListener('submit', makeMod);
+    </script>
+</body>
+</html>

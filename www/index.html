@@ -34,7 +34,7 @@
         <form class="horizCentre" id="calculatorForm">
             <div class="sideBySideTextbox">
                 <button type="button"><i class="fas fa-minus" onclick="changeCarbs(-10);"></i></button>
-                <input class="textbox" type="number" name="Carbohydrates" value="0">
+                <input class="textbox" type="number" name="Carbohydrates" placeholder="0">
                 <label>Carbohydrates</label>
                 <button type="button" style="padding-right:0.5em;" onclick="changeCarbs(10);"><i class="fas fa-plus"></i></button>
                 <button type="button"><i class="fas fa-pizza-slice"></i></button>
@@ -190,14 +190,17 @@
             
             options['modifiers'] = findSelectedModifiers();
 
+
+            const dose = calculateDose(options)
+            document.querySelector('#units').innerText = dose;
+
             userData.addDiaryEntry({
-                bloodSugar: parseFloat(bloodSugar),
+                bloodSugar: parseFloat(bloodSugar).toFixed(1),
                 carbohydrates: parseFloat(carbohydrates),
+                dose: parseFloat(dose),
                 modifiers: options['modifiers'],
                 timeStamp: new Date().getTime()
             });
-
-            document.querySelector('#units').innerText = calculateDose(options);
         }
 
         const form = document.querySelector('#calculatorForm');

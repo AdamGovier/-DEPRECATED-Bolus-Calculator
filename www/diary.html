@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,53 +12,159 @@
     <script src="scripts/storage.js"></script>
     <script src="cordova.js"></script>
     <script src="scripts/logic.js"></script>
+    <script src="assets/moment.js"></script>
+    <script src="assets/chart.js"></script>
 </head>
+
 <body>
     <nav>
         <img src="assets/Icons/logo.png" id="navLogo">
     </nav>
     <main class="horizCentre">
-        <div class="menu-container fixed-nav-button" style="height: 70px;" onclick="exitWithOutSaving();">
-            <i class="fas fa-arrow-circle-left"></i> <h5 style="font-weight: 100; text-align: center;">22/01/2021</h5><i style="margin-left:5px;" class="far fa-calendar-alt"></i><i class="fas fa-arrow-circle-right"></i>
+        <div class="menu-container fixed-nav-button" style="height: 70px;">
+            <i class="fas fa-arrow-circle-left" onclick="cycleDate(true);"></i>
+            <h5 style="font-weight: 100; text-align: center;" id="dateHeader">22/01/2021</h5><i style="margin-left:5px;"
+                class="far fa-calendar-alt"></i><i class="fas fa-arrow-circle-right" onclick="cycleDate(false);"></i>
         </div>
-        <img src="./assets/placeholder-graph.png" style="width: 95%; height:25vh; margin-top:20px;">
+        <canvas id="graphCanvas" style="margin-top:10px; width: 100%; height:35vh"></canvas>
+        <script>
+            function genGraph(graphData) {
+                const ctx = document.getElementById("graphCanvas").getContext('2d');
+
+                let xAxes = [];
+                if(graphData.length > 1) {
+                    xAxes = [{
+                        type: "time",
+                        time: {
+                            displayFormats: {
+                                quarter: 'h:mm'
+                            },
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }];
+                }
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: "Blood Sugar",
+                                data: graphData,
+                                fill: false,
+                                borderColor: 'red',
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: false,
+                        },
+                        scales: {
+                            xAxes,
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'value'
+                                },
+                                ticks: {
+                                    stepSize: 2
+                                }
+                            }],
+                        }
+                    }
+                });
+            }
+        </script>
         <div style="width: 95%; margin-top:10%;">
-            <fieldset> <!--Arguably should not use a fieldset outside of a form but the css for a fake fieldset is ugly https://stackoverflow.com/questions/2213881/is-it-possible-to-achieve-a-fieldset-like-effect-without-using-the-fieldset-->
-                <legend style="padding: 0 10px;">Average 8.2 mmol/L</legend>
+            <fieldset>
+                <!--Arguably should not use a fieldset outside of a form but the css for a fake fieldset is ugly https://stackoverflow.com/questions/2213881/is-it-possible-to-achieve-a-fieldset-like-effect-without-using-the-fieldset-->
+                <legend style="padding: 0 10px;"><span id="avg"></span></legend>
                 <div id="entryContainer">
-                    <div class="diaryHolder goodBG">
-                        <h5>7.4</h5><span>mmol/L</span><h4>17:00</h4>
-                    </div>
-                    <div class="diaryHolder hypoBG">
-                        <h5>3.7</h5><span>mmol/L</span><h4>11:47</h4> 
-                    </div>
-                    <div class="diaryHolder hyperBG">
-                        <h5>13.2</h5><span>mmol/L</span><h4>14:25</h4>  
-                    </div>
+
                 </div>
                 <script>
-                    if(userData.get("diaryEntries")) {
-                        const diary = JSON.parse(userData.get("diaryEntries"));
-                        let output = "";
-                        diary.forEach(entry => {
-                            let date = new Date(entry.timeStamp);
-                            let bgType = "";
-                            if(entry.bloodSugar > 4 && entry.bloodSugar < 8) {
-                                bgType = "good";
-                            } else if (entry.bloodSugar < 4) {
-                                bgType = "hypo";
-                            } else {
-                                bgType = "hyper";
-                            }
+                    let diaryDateTracker = new Date().getTime();
 
-                            output += `<div class="diaryHolder ${bgType}BG"><h5>${entry.bloodSugar}</h5><span>mmol/L</span><h4>${date.getHours()}:${date.getMinutes()}</h4></div>`;
-                            console.log(entry);
-                        });
-                        document.querySelector('#entryContainer').innerHTML = output;
+                    cycleDate(false); // Initialize header 
+                    cycleDate(true);  // go back so it sets header as todays date
+
+                    // Cycles through diary on a per day basis, 
+                    function cycleDate(back) {
+                        back ? diaryDateTracker -= 8.64e+7 : diaryDateTracker += 8.64e+7; // 8.64e+7 is one days length in milliseconds.
+
+                        const diaryDateTrackerObject = new Date(diaryDateTracker);
+                        const diaryDateTrackerHeader = ('0' + diaryDateTrackerObject.getDate()).slice(-2) + '/' + ('0' + (diaryDateTrackerObject.getMonth() + 1)).slice(-2) + '/' + diaryDateTrackerObject.getFullYear(); // https://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date
+
+                        document.querySelector('#dateHeader').innerHTML = diaryDateTrackerHeader;
+
+                        getDiaryEntries(diaryDateTracker);
                     }
+
+                    function getDiaryEntries(timestamp) {
+                        let inputDate = new Date(timestamp);
+
+                        if (userData.get("diaryEntries")) {
+                            const diary = JSON.parse(userData.get("diaryEntries"));
+
+                            let output = "";
+
+                            // For the graphs
+                            let graphData = [];
+
+                            diary.filter(entry => {
+                                let entryDate = new Date(entry.timeStamp);
+                                if (inputDate.getFullYear() === entryDate.getFullYear() && inputDate.getMonth() === entryDate.getMonth() && inputDate.getDay() === entryDate.getDay()) {
+                                    return entry;
+                                }
+                            }).forEach(entry => {
+                                let date = new Date(entry.timeStamp);
+                                let bgType = "";
+
+                                graphData.push({ x: date, y: userData.get("bloodSystem") === "mg/dL" ? parseFloat(entry.bloodSugar) * 18 : parseFloat(entry.bloodSugar)});
+
+                                if (entry.bloodSugar > parseFloat(userData.get("minPost_CorrectionBgLevel")) && entry.bloodSugar < parseFloat(userData.get("maxPost_CorrectionBgLevel"))) {
+                                    bgType = "good";
+                                } else if (entry.bloodSugar < parseFloat(userData.get("minPost_CorrectionBgLevel"))) {
+                                    bgType = "hypo";
+                                } else if (entry.bloodSugar > parseFloat(userData.get("maxPost_CorrectionBgLevel"))) {
+                                    bgType = "hyper";
+                                } else {
+                                    bgType = "good";
+                                }
+
+                                output += `<div class="diaryHolder ${bgType}BG"><h5>${entry.bloodSugar !== "NaN" ? userData.get("bloodSystem") === "mg/dL" ? Math.round(entry.bloodSugar * 18) : entry.bloodSugar : "N/A"}</h5><span>${entry.dose ? '<p>' + entry.dose + 'U <i class="fas fa-syringe"></i> </p>' : ''}${userData.get("bloodSystem")}</span><h4>${date.getHours()}:${date.getMinutes()}</h4></div>`;
+                            });
+
+                            genGraph(graphData);
+
+                            let totalBloodSugar = 0;
+
+                            const avgGraphData = graphData.filter(a => {
+                                if(a.y !== "NAN") {
+                                    return a;
+                                }
+                            });
+
+                            avgGraphData.forEach(bg => {
+                                totalBloodSugar += parseFloat(bg.y);
+                            });
+
+                            const avg = totalBloodSugar / avgGraphData.length;
+
+                            document.querySelector('#avg').innerText = !isNaN(avg) ? `Average ${avg.toFixed(1)} ${userData.get("bloodSystem")}` : "No Data";
+
+                            document.querySelector('#entryContainer').innerHTML = output;
+                        }
+                    }
+
                 </script>
             </fieldset>
         </div>
-    </main> 
+    </main>
 </body>
+
 </html>

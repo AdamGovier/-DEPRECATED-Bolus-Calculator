@@ -19,7 +19,11 @@ const calculateDose = (options) => {
     dose = (Math.round(dose * 4) / 4).toFixed(2);
 
     showStatus(true);
-    return dose;
+    if(dose > 0) {
+        return dose;
+    } else {
+        return 0.00;
+    }
 }
 
 /**
@@ -96,7 +100,11 @@ const bloodSugarDoseCalc = (bloodSugar) => {
     /**
      * Forumla sourced from https://www.nhstayside.scot.nhs.uk/OurServicesA-Z/DiabetesOutThereDOTTayside/PROD_263751/index.htm
      */
-    return (bloodSugar - targetBloodSugar) / correctionFactor;
+    if(bloodSugar < minPost_CorrectionBgLevel || bloodSugar > maxPost_CorrectionBgLevel) {
+        return (bloodSugar - targetBloodSugar) / correctionFactor;
+    } else {
+        return 0;
+    }
 }
 
 /**

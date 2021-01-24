@@ -113,7 +113,7 @@
                         <h4>Correction Factor</h4>
                     </div>
                     <div class="sideBySideTextbox">
-                        <input class="textbox" type="number" name="CorrectionFactor" onkeyup="validateEmptyValues();" placeholder="2.3" step=".1">
+                        <input class="textbox" type="number" name="CorrectionFactor" onkeyup="validateEmptyValues();" placeholder="2.3" step=".2">
                         <label class="bloodSystem"></label>
                         <button type="button" onclick="document.querySelector('#correctionFactorCalcPanel').style.display = 'flex'; document.querySelector('body').style.overflowY = 'hidden';">?</button>
                     </div>
@@ -205,7 +205,7 @@
                 // parseFloat is not really needed could of used parseInt but if the user wants to be really accurate I guess they have the option to.
                 // also type="number" should return a number but just in case.
                 const totalDailyDose = parseFloat(document.querySelector('input[name="avgBasalPerDay"]').value) + parseFloat(document.querySelector('input[name="avgBolusPerDay"]').value);
-                document.querySelector('input[name="CorrectionFactor"]').value = (totalDailyDose / 100);
+                document.querySelector('input[name="CorrectionFactor"]').value = (100 / totalDailyDose);
                 document.querySelector('#correctionFactorCalcPanel').style.display = 'none'; document.querySelector('body').style.overflowY = 'scroll';
             });
         </script>

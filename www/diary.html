@@ -12,8 +12,6 @@
     <script src="scripts/storage.js"></script>
     <script src="cordova.js"></script>
     <script src="scripts/logic.js"></script>
-    <script src="assets/moment.js"></script>
-    <script src="assets/chart.js"></script>
 </head>
 
 <body>
@@ -26,59 +24,6 @@
             <h5 style="font-weight: 100; text-align: center;" id="dateHeader">22/01/2021</h5><i style="margin-left:5px;"
                 class="far fa-calendar-alt"></i><i class="fas fa-arrow-circle-right" onclick="cycleDate(false);"></i>
         </div>
-        <canvas id="graphCanvas" style="margin-top:10px; width: 100%; height:35vh"></canvas>
-        <script>
-            function genGraph(graphData) {
-                const ctx = document.getElementById("graphCanvas").getContext('2d');
-
-                let xAxes = [];
-                if(graphData.length > 1) {
-                    xAxes = [{
-                        type: "time",
-                        time: {
-                            displayFormats: {
-                                quarter: 'h:mm'
-                            },
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Time'
-                        }
-                    }];
-                }
-                const chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                            {
-                                label: "Blood Sugar",
-                                data: graphData,
-                                fill: false,
-                                borderColor: 'red',
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        title: {
-                            display: false,
-                        },
-                        scales: {
-                            xAxes,
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: 'value'
-                                },
-                                ticks: {
-                                    stepSize: 2
-                                }
-                            }],
-                        }
-                    }
-                });
-            }
-        </script>
         <div style="width: 95%; margin-top:10%;">
             <fieldset>
                 <!--Arguably should not use a fieldset outside of a form but the css for a fake fieldset is ugly https://stackoverflow.com/questions/2213881/is-it-possible-to-achieve-a-fieldset-like-effect-without-using-the-fieldset-->
@@ -112,8 +57,7 @@
 
                             let output = "";
 
-                            // For the graphs
-                            let graphData = [];
+                            let bgArray = []; // for avg blood sugar
 
                             diary.filter(entry => {
                                 let entryDate = new Date(entry.timeStamp);
@@ -124,7 +68,7 @@
                                 let date = new Date(entry.timeStamp);
                                 let bgType = "";
 
-                                graphData.push({ x: date, y: userData.get("bloodSystem") === "mg/dL" ? parseFloat(entry.bloodSugar) * 18 : parseFloat(entry.bloodSugar)});
+                                bgArray.push(entry.bloodSugar);
 
                                 if (entry.bloodSugar > parseFloat(userData.get("minPost_CorrectionBgLevel")) && entry.bloodSugar < parseFloat(userData.get("maxPost_CorrectionBgLevel"))) {
                                     bgType = "good";
@@ -136,24 +80,24 @@
                                     bgType = "good";
                                 }
 
-                                output += `<div class="diaryHolder ${bgType}BG"><h5>${entry.bloodSugar !== "NaN" ? userData.get("bloodSystem") === "mg/dL" ? Math.round(entry.bloodSugar * 18) : entry.bloodSugar : "N/A"}</h5><span>${entry.dose ? '<p>' + entry.dose + 'U <i class="fas fa-syringe"></i> </p>' : ''}${userData.get("bloodSystem")}</span><h4>${date.getHours()}:${date.getMinutes()}</h4></div>`;
+                                if(!isNaN(entry.bloodSugar) || entry.dose !== 0) {
+                                    output += `<div class="diaryHolder ${bgType}BG"><h5>${entry.bloodSugar !== "NaN" ? userData.get("bloodSystem") === "mg/dL" ? Math.round(entry.bloodSugar * 18) : entry.bloodSugar : "N/A"}</h5><span>${entry.dose ? '<p>' + entry.dose + 'U <i class="fas fa-syringe"></i> </p>' : ''}${userData.get("bloodSystem")}</span><h4>${date.getHours()}:${date.getMinutes()}</h4></div>`;
+                                }      
                             });
-
-                            genGraph(graphData);
 
                             let totalBloodSugar = 0;
 
-                            const avgGraphData = graphData.filter(a => {
-                                if(a.y !== "NAN") {
+                            const filteredBgArray = bgArray.filter(a => {
+                                if(!isNaN(a)) {
                                     return a;
                                 }
                             });
 
-                            avgGraphData.forEach(bg => {
-                                totalBloodSugar += parseFloat(bg.y);
+                            filteredBgArray.forEach(bg => {
+                                totalBloodSugar += parseFloat(bg);
                             });
 
-                            const avg = totalBloodSugar / avgGraphData.length;
+                            const avg = totalBloodSugar / filteredBgArray.length;
 
                             document.querySelector('#avg').innerText = !isNaN(avg) ? `Average ${avg.toFixed(1)} ${userData.get("bloodSystem")}` : "No Data";
 

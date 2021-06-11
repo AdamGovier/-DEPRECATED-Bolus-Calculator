@@ -470,3 +470,33 @@ legend {
 .diaryHolder.hyperBG {
     background-color: darkorange;
 }
+
+.mealHolder {
+    display: flex;
+}
+
+.mealThumbnail {
+    background-image: url('https://www.kitchensanctuary.com/wp-content/uploads/2019/04/Square-FS.jpg');
+    background-size:cover;
+    height: 100px;
+    width: 100px;
+}
+
+.mealContentHolder {
+    height: 100px;
+    flex-grow: 1;
+    padding: 0 10px;
+}
+
+.mealContentHolder legend {
+    font-weight: bold;
+}
+
+.mealContentHolder fieldset {
+    padding: 0 10px;
+    height: 95px;
+}
+
+.mealContentHolder fieldset div {
+    margin: 5px 10px;
+}

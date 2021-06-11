@@ -27,7 +27,7 @@
 </head>
 <body>
     <nav>
-        <img src="assets/Icons/logo.png" id="navLogo">
+        <img src="assets/Icons/logo.png" id="navLogo" onclick="window.location = 'settings/menu.html'">
     </nav>
     <main class="horizCentre">
         <h1>Bolus Calculator</h1>
@@ -56,6 +56,26 @@
         </form>
         <h1 class="dose"><span id="units">0.00</span> Units</h1>
     </main>
+    <div class="fixed-panel" id="MealHotMenu" style="display: none;">
+        <div onclick="" class="menu-container fixed-nav-button">
+            <h5><i class="fas fa-arrow-circle-left"></i></h5><h5><i class="far fa-plus-square"></i></h5><h5><i class="fas fa-search"></i></h5>
+        </div>
+        <div style="padding:5%;">
+            <h2>Saved Meals</h2>
+            <div class="mealHolder">
+                <div class="mealThumbnail"></div>
+                <div class="mealContentHolder">
+                    <fieldset>
+                        <legend>Roast Dinner</legend>
+                        <div>
+                            <p>Carbohydrates: 400</p>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        
+    </div>
     <div class="horizCentre fixed-panel" id="modifierListMenu" style="display: none;">
         <div onclick="showModifierListMenu(false);" class="menu-container fixed-nav-button">
             <h5><i class="fas fa-arrow-circle-left"></i> Continue</h5>

@@ -16,7 +16,7 @@
 
 <body>
     <nav>
-        <img src="assets/Icons/logo.png" id="navLogo">
+        <img src="assets/Icons/return.png" id="navLogo" onclick="window.location = 'settings/menu.html'">
     </nav>
     <main class="horizCentre">
         <div class="menu-container fixed-nav-button" style="height: 70px;">
@@ -102,6 +102,8 @@
                             document.querySelector('#avg').innerText = !isNaN(avg) ? `Average ${avg.toFixed(1)} ${userData.get("bloodSystem")}` : "No Data";
 
                             document.querySelector('#entryContainer').innerHTML = output;
+                        } else {
+                            document.querySelector('#avg').innerText = "No Data";
                         }
                     }
 

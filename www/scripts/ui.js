@@ -54,13 +54,12 @@ const showStatus = (status, back) => {
  */
 document.querySelector('#navLogo').addEventListener('click', () => {
     if(localStorage.getItem("returningUser")) {
-        if(window.location.href.includes("settings/")) {
+        if(!document.querySelector("#navLogo").hasAttribute("onclick")) { // other routes stored directly on the html file -- <img src="../assets/Icons/return.png" id="navLogo" onclick="window.location = 'menu.html';">
             window.location = "../index.html";
-        } else {
-            window.location = "settings/menu.html";
         }
     }
 });
+
 
 /**
  * Deduct or increase the number of carbohydrates in the carbohydrates input
@@ -96,4 +95,3 @@ function onDeviceReady() {
         // ugly way of handling if page does not have a onBackKeyDown handler function
     }
 }
-

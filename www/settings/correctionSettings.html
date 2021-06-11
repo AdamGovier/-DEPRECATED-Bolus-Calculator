@@ -10,7 +10,7 @@
     <script src="../scripts/storage.js"></script>
     <script src="../scripts/setBtn.js"></script>
     <script src="../cordova.js"></script>
-    <script>
+    <script defer>
         function onBackKeyDown(e) {
             if(document.querySelector('#correctionFactorCalcPanel').style.display === "flex") { // back button works from the correctionFactorCalcPanel instead of returning to previous page
                 e.preventDefault();
@@ -29,17 +29,14 @@
 </head>
 <body>
     <nav>
-        <img src="../assets/Icons/logo.png" id="navLogo">
-    </nav>
-    <main class="horizCentre" >
-        <div class="menu-container fixed-nav-button" onclick="exitWithOutSaving();">
-            <h5><i class="fas fa-arrow-circle-left"></i> Go Back</h5>
-        </div>
+        <img src="../assets/Icons/return.png" id="navLogo" onclick="exitWithOutSaving();">
         <script>
-            if(!userData.get("returningUser")) {
-                document.querySelector('.fixed-nav-button').setAttribute("onclick", "window.location = 'doseSettings.html';");
+            if(!userData.get("returningUser")) { // on first launch go back to dose settings if user uses back button
+                document.querySelector('#navLogo').setAttribute("onclick", "window.location = 'doseSettings.html';");
             }
         </script>
+    </nav>
+    <main class="horizCentre">
         <h1 style="margin-block-end: 20px;">Correction Settings</h1>
         
         <form class="horizCentre" id="correctionForm">
@@ -113,7 +110,7 @@
                         <h4>Correction Factor</h4>
                     </div>
                     <div class="sideBySideTextbox">
-                        <input class="textbox" type="number" name="CorrectionFactor" onkeyup="validateEmptyValues();" placeholder="2.3" step=".2">
+                        <input class="textbox" type="number" name="CorrectionFactor" onkeyup="validateEmptyValues();" placeholder="2.3" step=".01">
                         <label class="bloodSystem"></label>
                         <button type="button" onclick="document.querySelector('#correctionFactorCalcPanel').style.display = 'flex'; document.querySelector('body').style.overflowY = 'hidden';">?</button>
                     </div>

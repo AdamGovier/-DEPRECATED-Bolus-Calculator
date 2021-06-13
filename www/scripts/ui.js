@@ -67,7 +67,8 @@ document.querySelector('#navLogo').addEventListener('click', () => {
  */
 const changeCarbs = (amt) => {
     const carbohydrates = document.querySelector('#calculatorForm input[name="Carbohydrates"]');
-    const carbValue = parseFloat(carbohydrates.value) + amt;
+    const inputValue = carbohydrates.value ? parseFloat(carbohydrates.value) : 0;
+    const carbValue = inputValue + amt;
     carbohydrates.value = carbValue;
     if(carbohydrates.value < 0) {
         document.querySelector('#carbError').innerText = "Error: Carbohydrates cannot be less than 0.";

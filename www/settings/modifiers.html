@@ -21,6 +21,12 @@
 <body>
     <nav>
         <img src="../assets/Icons/return.png" id="navLogo" onclick="window.location = 'settingsMenu.html';">
+        <script>
+            // Fix of going back to menu when refering from the main calculator page (index.html)
+            if(document.referrer.endsWith("index.html") || document.referrer.endsWith("/www/")) {
+                document.querySelector("#navLogo").setAttribute("onclick", "window.location = '../index.html';")
+            }
+        </script>
     </nav>
     <main class="horizCentre">
         <h1>Modifier Settings</h1>

@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Calculator</title>
     <link rel="stylesheet" href="css/ui.css">
     <link href="assets/fontawesome-free-5.15.1-web/css/all.css" rel="stylesheet">
     <script src="scripts/ui.js" defer></script>
     <script src="scripts/validation.js"></script>
     <script src="scripts/storage.js"></script>
+    <script src="scripts/shortcuts.js" defer></script>
     <script defer>
         if(!userData.get("returningUser")) {
             window.location = "settings/legal.html";
@@ -37,7 +38,7 @@
                 <input class="textbox" type="number" name="Carbohydrates" placeholder="0">
                 <label>Carbohydrates</label>
                 <button type="button" style="padding-right:0.5em;" onclick="changeCarbs(10);"><i class="fas fa-plus"></i></button>
-                <button type="button"><i class="fas fa-pizza-slice"></i></button>
+                <button type="button" onclick="showQuickMenu(true)"><i class="fas fa-pizza-slice"></i></button>
             </div>
             <div style="width: 95%;">
                 <p id="carbError" class="error"></p>
@@ -56,32 +57,73 @@
         </form>
         <h1 class="dose"><span id="units">0.00</span> Units</h1>
     </main>
-    <div class="fixed-panel" id="MealHotMenu" style="display: none;">
-        <div onclick="" class="menu-container fixed-nav-button">
-            <h5><i class="fas fa-arrow-circle-left"></i></h5><h5><i class="far fa-plus-square"></i></h5><h5><i class="fas fa-search"></i></h5>
+    <div class="fixed-panel horizCentre carbShortcuts" id="MealHotMenu" style="display: flex">
+        <div onclick="showQuickMenu(false);" class="menu-container fixed-nav-button">
+            <h5><i class="fas fa-arrow-circle-left"></i> Continue</h5>
         </div>
-        <div style="padding:5%;">
-            <h2>Saved Meals</h2>
-            <div class="mealHolder">
-                <div class="mealThumbnail"></div>
-                <div class="mealContentHolder">
-                    <fieldset>
-                        <legend>Roast Dinner</legend>
-                        <div>
-                            <p>Carbohydrates: 400</p>
-                        </div>
-                    </fieldset>
+        <h2 style="margin-top: 30px;">Carb Shortcuts</h2>
+        <div class="tab_nav">
+            <button class="tab_button active" id="tab_saved_btn" onclick="enableTab('tab_saved')"><i class="fas fa-save"></i> <p>Saved</p> <span><!-- Filler --></span></button>
+            <button class="tab_button" id="tab_database_btn" onclick="enableTab('tab_database')"><i class="fas fa-database"></i> <p>Bolus Calc</p> <span><!-- Filler --></span></button>
+            <script>
+                function enableTab(tab) { // make sure only one is checked, like a radio button
+                    const shortcutBtn = document.querySelector("#ShortcutButton");
+
+                    if(tab === "tab_saved") {
+                        document.querySelector('#tab_saved_btn').classList.add('active');
+                        document.querySelector(`#tab_database_btn`).classList.remove('active');
+                        
+                        document.querySelector("#addShortcut").removeAttribute("disabled");
+                    } else if (tab === "tab_database") {
+                        document.querySelector('#tab_database_btn').classList.add('active');
+                        document.querySelector(`#tab_saved_btn`).classList.remove('active');
+
+                        document.querySelector("#addShortcut").setAttribute("disabled", true);
+                    }
+                    
+
+
+                }
+            </script>
+        </div>
+
+        <div style="flex: 1; width: 80%; overflow-y: scroll;">
+            <div class="card-holder">
+                <div class="card">
+                    <div class="head"><p>35 Carbs</p></div>
+                    <div class="thumbnail"></div>
+                    <p style="padding: 20px;">Slice of pizza</p>
+                    
+                    <div class="footer">
+                        <i class="fas fa-plus"></i><p>Add</p>
+                    </div>
                 </div>
-            </div>
+                <div class="card">
+                    <div class="head"><p>35 Carbs</p></div>
+                    <div class="thumbnail"></div>
+                    <p style="padding: 20px;">Slice of pizza</p>
+                    
+                    <div class="footer">
+                        <i class="fas fa-plus"></i><p>Add</p>
+                    </div>
+                </div>
+            </div>      
+        </div>
+
+        <div class="tab_nav" style="margin-bottom: 5%;">
+            <button class="tab_button" id="addShortcut"><i class="fas fa-plus"></i> <p>Add Shortcut</p> <span><!-- Filler --></span></button>
+            <button class="tab_button" onclick="searchShortcuts()"><i class="fas fa-search"></i> <p>Search</p> <span><!-- Filler --></span></button>
         </div>
         
+        
+
     </div>
     <div class="horizCentre fixed-panel" id="modifierListMenu" style="display: none;">
         <div onclick="showModifierListMenu(false);" class="menu-container fixed-nav-button">
             <h5><i class="fas fa-arrow-circle-left"></i> Continue</h5>
         </div>
         <h2 style="margin-top: 30px;" id="modifierTitle">Modifiers</h2>
-        <button class="button-2nd" id="NoModifierButton" onclick="window.location = './settings/modifiers.html';" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 170px; margin-top: 5px; display: none;"><i class="fas fa-plus" style="color: var(--action-colour);"></i> <p>Add Modifiers</p> <span><!-- Filler --></span></span></button>
+        <button class="button-2nd add_button" style="display: none;" id="NoModifierButton" onclick="window.location = './settings/modifiers.html';" type="button" ><i class="fas fa-plus" style="color: var(--action-colour);"></i> <p>Add Modifiers</p> <span><!-- Filler --></span></span></button>
         <div style="display: flex; justify-content: center;" style="width: 100%;">
             <div id="modifierList" style="display: flex; flex-direction: column;">
 
@@ -94,6 +136,7 @@
             </div>
         </div>
         <script>
+
                 function showModifierListMenu(bool) {
                     if(bool) {
                         document.querySelector('#modifierListMenu').style.display = "flex";
@@ -102,6 +145,14 @@
                     }
                     
                     renderSelectedModifiers(findSelectedModifiers()); // Show selected modifiers on home screen as a safety measure. 
+                }
+
+                function showQuickMenu(bool) {
+                    if(bool) {
+                        document.querySelector('#MealHotMenu').style.display = "flex";
+                    } else {
+                        document.querySelector('#MealHotMenu').style.display = "none";
+                    }
                 }
 
                 // Gathers a list of modifiers from localStorage and then renders a list of them in the modifier window.

@@ -67,7 +67,7 @@ document.querySelector('#navLogo').addEventListener('click', () => {
  */
 const changeCarbs = (amt) => {
     const carbohydrates = document.querySelector('#calculatorForm input[name="Carbohydrates"]');
-    const inputValue = carbohydrates.value ? parseFloat(carbohydrates.value) : 0;
+    const inputValue = carbohydrates.value ? parseFloat(carbohydrates.value) : 0; // if no value just default 0
     const carbValue = inputValue + amt;
     carbohydrates.value = carbValue;
     if(carbohydrates.value < 0) {

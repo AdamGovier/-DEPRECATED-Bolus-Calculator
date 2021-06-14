@@ -6,7 +6,7 @@
     --main-bg-colour: #313131;
     --secondary-bg-colour: #2a2a2a;
     --tertiary-colour: #3d3d3d;
-    --quaternary-colour: #3b3b3b;
+    --quaternary-colour: #4b4b4b;
     --text-colour-main: #e0e0e0;
 
     --element-margin: 10px;
@@ -47,6 +47,14 @@ h1 {
 h2 {
     font-family: 'Montserrat', sans-serif;
     font-size: 18px;
+    font-weight: lighter;
+
+    margin-bottom: 20px;
+}
+
+h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
     font-weight: lighter;
 
     margin-bottom: 20px;
@@ -145,6 +153,46 @@ textarea:focus, input:focus, button:focus{
     font-size: 85%;
 }
 
+
+
+.tab_nav {
+    width: 85%;
+    display: flex;
+    justify-content: space-evenly;
+    
+}
+
+.tab_button {
+    padding: 13px;
+    flex: 1;
+    margin: 5px;
+
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-top: 5px; 
+
+    background-color: var(--tertiary-colour);
+    color: var(--text-colour-main);
+
+    border: none;
+    border-radius: 3px;
+}
+
+.tab_button:disabled {
+    opacity: 0.2;
+}
+
+.tab_button i {
+    margin-right: 5px;
+    color: var(--action-colour);
+}
+
+.tab_button.active {
+    background-color: var(--quaternary-colour);
+    border: 1px solid var(--text-colour-main);
+}
+
 #calc-action-button {
     background-color: var(--action-colour);
     color: var(--text-colour-main);
@@ -157,6 +205,7 @@ textarea:focus, input:focus, button:focus{
     margin-top: 30px;
 
     border: none;
+    -webkit-appearance: none;
 }
 
 .button-2nd {
@@ -172,6 +221,14 @@ textarea:focus, input:focus, button:focus{
 
     border: none;
     border-radius: 3px;
+}
+
+.add_button {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    width: 170px; 
+    margin-top: 5px; 
 }
 
 .button-2nd:active {
@@ -280,7 +337,7 @@ textarea:focus, input:focus, button:focus{
 }
 
 .dev-stamp {
-    color: var(--quaternary-colour);
+    color: var(--tertiary-colour);
     
     font-family: 'Ubuntu', sans-serif;
     letter-spacing: 5px;
@@ -471,32 +528,54 @@ legend {
     background-color: darkorange;
 }
 
-.mealHolder {
+.card-holder { 
+    display: flex; 
+    width: 100%; 
+    justify-content: space-between;
+    margin-top:20px;
+}
+
+.card {
+    width: 45%;
+    border-radius: 15px;
+
     display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: var(--tertiary-colour);
 }
 
-.mealThumbnail {
-    background-image: url('https://www.kitchensanctuary.com/wp-content/uploads/2019/04/Square-FS.jpg');
-    background-size:cover;
-    height: 100px;
-    width: 100px;
+.card .head {
+    border-radius: 15px 15px 0 0;
+
+    width: 100%;
+    padding: 5px 0;
+
+    display: flex;
+    justify-content: center;
+
+    background-color: var(--main-bg-colour);
 }
 
-.mealContentHolder {
-    height: 100px;
-    flex-grow: 1;
-    padding: 0 10px;
+.card .thumbnail {
+    margin-top: 15px;
+    border-radius:5px;
+    width: 80%;
+    height: 80px;
+    background-image: url('../data/ShortcutLibrary/thumbnails/entry_pizza_140621.jpg');
+    background-size: cover;
 }
 
-.mealContentHolder legend {
-    font-weight: bold;
+.card .footer {
+    background-color: var(--action-colour);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    border-radius: 0 0 15px 15px;
+    padding: 5px 0;
 }
 
-.mealContentHolder fieldset {
-    padding: 0 10px;
-    height: 95px;
-}
-
-.mealContentHolder fieldset div {
-    margin: 5px 10px;
+.card .footer p {
+    margin-left:12px;
 }

@@ -156,7 +156,7 @@ textarea:focus, input:focus, button:focus{
 
 
 .tab_nav {
-    width: 85%;
+    width: 90%;
     display: flex;
     justify-content: space-evenly;
     
@@ -536,7 +536,7 @@ legend {
 }
 
 .card {
-    width: 45%;
+    width: 46%;
     border-radius: 15px;
 
     display: flex;

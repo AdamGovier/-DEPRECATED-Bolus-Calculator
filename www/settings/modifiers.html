@@ -120,7 +120,7 @@
                         </div>
                         <div id="ck-button">
                             <label>
-                            <input type="checkbox" name="tues" checked><span>Tues</span>
+                            <input type="checkbox" name="tue" checked><span>Tue</span>
                             </label>
                         </div>
                         <div id="ck-button">
@@ -130,7 +130,7 @@
                         </div>
                         <div id="ck-button">
                             <label>
-                            <input type="checkbox" name="thurs" checked><span>Thurs</span>
+                            <input type="checkbox" name="thu" checked><span>Thu</span>
                             </label>
                         </div>
                     </div>
@@ -172,7 +172,7 @@
             document.querySelector('#modifier-maker').style.display = "none";
             document.querySelector('input[name="editID"]').value = ""; createModForm.modifierLabel.value = ""; createModForm.percentageInput.value = ""; createModForm.increase.checked = false; createModForm.decrease.checked = true;
             createModForm.timeStart.value = "00:00"; createModForm.timeEnd.value = "00:00";
-            const daysOfTheWeek = ["mon", "tues", "wed", "thurs", "fri"]; // set all to checked = false
+            const daysOfTheWeek = ["mon", "tue", "wed", "thu", "fri"]; // set all to checked = false
             daysOfTheWeek.forEach(day => {
                 document.querySelector(`input[name="${day}"]`).checked = true;
             });
@@ -219,7 +219,7 @@
             const autoSchedule = createModForm.autoSchedule.checked;
             let daysSelected = [];
             const time = {start:createModForm.timeStart.value, end: createModForm.timeEnd.value};
-            const daysOfTheWeek = ["mon", "tues", "wed", "thurs", "fri", "sat", "sun"];
+            const daysOfTheWeek = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
             daysOfTheWeek.forEach(day => {
                 if (document.querySelector(`input[name="${day}"]`).checked) daysSelected.push(day);
@@ -250,7 +250,7 @@
                     document.querySelector('#scheduler').style.display = "none";
                 }
 
-                const daysOfTheWeek = ["mon", "tues", "wed", "thurs", "fri", "sat", "sun"]; // set all to checked = false
+                const daysOfTheWeek = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]; // set all to checked = false
                 daysOfTheWeek.forEach(day => {
                     document.querySelector(`input[name="${day}"]`).checked = false;
                 });

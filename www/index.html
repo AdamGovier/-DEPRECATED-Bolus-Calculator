@@ -57,7 +57,7 @@
         </form>
         <h1 class="dose"><span id="units">0.00</span> Units</h1>
     </main>
-    <div class="fixed-panel horizCentre carbShortcuts" id="MealHotMenu" style="display: flex">
+    <div class="fixed-panel horizCentre carbShortcuts" id="MealHotMenu" style="display: none">
         <div onclick="showQuickMenu(false);" class="menu-container fixed-nav-button">
             <h5><i class="fas fa-arrow-circle-left"></i> Continue</h5>
         </div>
@@ -78,16 +78,14 @@
                         document.querySelector('#tab_database_btn').classList.add('active');
                         document.querySelector(`#tab_saved_btn`).classList.remove('active');
 
+                        // if databse tab do not show the add button
                         document.querySelector("#addShortcut").setAttribute("disabled", true);
                     }
-                    
-
-
                 }
             </script>
         </div>
 
-        <div style="flex: 1; width: 80%; overflow-y: scroll;">
+        <div style="flex: 1; width: 85%; overflow-y: scroll;">
             <div class="card-holder">
                 <div class="card">
                     <div class="head"><p>35 Carbs</p></div>
@@ -157,6 +155,7 @@
 
                 // Gathers a list of modifiers from localStorage and then renders a list of them in the modifier window.
                 function generateList() {
+                    
                     if(userData.get("modifiers")) {
                         const modifiers = JSON.parse(userData.get("modifiers"));
                         let template = "";
@@ -171,11 +170,14 @@
                         template = "";
                         const date = new Date();
                         const today = date.toString().split(' ')[0].toLowerCase();
+                        console.log(today);
                         const scheduledModifiers = modifiers.filter(a => {if(a.autoSchedule && a.days.includes(today)) return a;});
+                        console.log(modifiers)
                         if(scheduledModifiers.length === 0) {
                             document.querySelector('#modifierScheduleTitle').innerText = "Nothing Scheduled";
                         }
                         scheduledModifiers.forEach(modifier => {
+                            
                             template += `<div id="ck-button"><label style="width: 60vw;"><input class="modifierInput" type="checkbox" ${isInbetween(modifier.time.start, modifier.time.end) ? "checked" : ""} name="modifier-${modifier.id}"><span><span style="margin-left: 5px;">[ ${modifier.time.start} - ${modifier.time.end} ]</span><span style="margin-right: 5px;">${modifier.label}</span></span></label></div>`;
                         });
                         document.querySelector('#modifierListScheduled').innerHTML = template;

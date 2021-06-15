@@ -533,6 +533,7 @@ legend {
     width: 100%; 
     justify-content: space-between;
     margin-top:20px;
+    overflow-x: none;
 }
 
 .card {
@@ -544,6 +545,7 @@ legend {
     align-items: center;
 
     background-color: var(--tertiary-colour);
+    overflow-x: none;
 }
 
 .card .head {
@@ -578,4 +580,13 @@ legend {
 
 .card .footer p {
     margin-left:12px;
+}
+
+.card > p {
+    height: 40px;
+    width: 60%;
+    text-align: center;
+    overflow: none;
+    text-overflow: ellipsis; /* Doesn't work for some reason */
+    padding: 20px;
 }

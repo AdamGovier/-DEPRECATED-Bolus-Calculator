@@ -85,27 +85,8 @@
             </script>
         </div>
 
-        <div style="flex: 1; width: 85%; overflow-y: scroll;">
-            <div class="card-holder">
-                <div class="card">
-                    <div class="head"><p>35 Carbs</p></div>
-                    <div class="thumbnail"></div>
-                    <p style="padding: 20px;">Slice of pizza</p>
-                    
-                    <div class="footer">
-                        <i class="fas fa-plus"></i><p>Add</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="head"><p>35 Carbs</p></div>
-                    <div class="thumbnail"></div>
-                    <p style="padding: 20px;">Slice of pizza</p>
-                    
-                    <div class="footer">
-                        <i class="fas fa-plus"></i><p>Add</p>
-                    </div>
-                </div>
-            </div>      
+        <div style="flex: 1; width: 85%; overflow-y: scroll;" id="shortcutHolder">
+     
         </div>
 
         <div class="tab_nav" style="margin-bottom: 5%;">
@@ -170,9 +151,7 @@
                         template = "";
                         const date = new Date();
                         const today = date.toString().split(' ')[0].toLowerCase();
-                        console.log(today);
                         const scheduledModifiers = modifiers.filter(a => {if(a.autoSchedule && a.days.includes(today)) return a;});
-                        console.log(modifiers)
                         if(scheduledModifiers.length === 0) {
                             document.querySelector('#modifierScheduleTitle').innerText = "Nothing Scheduled";
                         }

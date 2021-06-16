@@ -334,6 +334,7 @@ textarea:focus, input:focus, button:focus{
 
 .menu-container h5 i {
     margin: 0 4px;
+    color: var(--action-colour)
 }
 
 .dev-stamp {
@@ -444,6 +445,11 @@ textarea:focus, input:focus, button:focus{
 
 .fixed-nav-button {
     height:50px; border-top: solid 2px var(--tertiary-colour);
+}
+
+.checkout {
+    border-top: 0;
+    background-color: var(--action-colour);
 }
 
 /* https://jsfiddle.net/zAFND/4/ */
@@ -575,7 +581,11 @@ legend {
     display: flex;
     justify-content: center;
     border-radius: 0 0 15px 15px;
-    padding: 5px 0;
+    padding: 8px 0;
+}
+
+.card .footer.selected {
+    background-color: var(--action-colour-darker);
 }
 
 .card .footer p {

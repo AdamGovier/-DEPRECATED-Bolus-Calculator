@@ -89,6 +89,10 @@ const userData = {
         });
         localStorage.setItem("modifiers", JSON.stringify(updatedModifiers));
     },
+    /**
+     * Adds an entry to the diary which can be accessed from diary.html
+     * @param {Number} id 
+     */
     addDiaryEntry : data => {
         let currentEntries = [];
 
@@ -101,3 +105,71 @@ const userData = {
     }
 };
 
+const shortcutCart = {
+    cartKey:"cartEntries",
+    modifyCartEntry : (action, data) => {
+        let currentEntries = [];
+
+        let found = false;
+
+        if(sessionStorage.getItem(shortcutCart.cartKey)) {
+            currentEntries = JSON.parse(sessionStorage.getItem(shortcutCart.cartKey));
+            for (let i = 0; i < currentEntries.length; i++) {
+                const shortcut = currentEntries[i];
+                if(shortcut.id === data.id && shortcut.sourceOfData === data.sourceOfData) {
+                    if(action === "add") {
+                        currentEntries[i].qty += data.qty;
+                    } else if (action === "minus") {
+                        currentEntries[i].qty -= data.qty;
+                        if(currentEntries[i].qty <= 0) {
+                            currentEntries.splice(i, 1);
+                        }
+                    }
+                    
+                    found = true;
+                }
+            }
+        }
+
+        if(!found) {
+            currentEntries.push(data);
+        }
+
+        sessionStorage.setItem(shortcutCart.cartKey, JSON.stringify(currentEntries));
+    },
+    /**
+     * Checks if shortcut is already added.
+     * @param {int} id Shortcut ID
+     * @param {string} sourceOfData local or api
+     * @returns In theroy 0 or 1 e.g. true or false as there should not be duplicate results.
+     */
+    checkIfInCart: (id, sourceOfData) => {
+        return shortcutCart.getCartEntries().filter(a => {
+            return a.id === id && a.sourceOfData === sourceOfData;
+        }).length;
+    },
+    getItem: (id, sourceOfData) => {
+        if(shortcutCart.getCartEntries()) {
+            return shortcutCart.getCartEntries().filter(a => {
+                return a.id === id && a.sourceOfData === sourceOfData;
+            })[0];
+        } else {
+            return null;
+        }
+    },
+    getCartEntries : () => {
+        return JSON.parse(sessionStorage.getItem(shortcutCart.cartKey));
+    },
+    totalCarbs : () => {
+        let total = 0;
+        if(shortcutCart.getCartEntries()) {
+            shortcutCart.getCartEntries().forEach(shortcut => {
+                total += shortcut.carbs * shortcut.qty;
+            });
+        }
+        return total;
+    },
+    clearCart : () => {
+        sessionStorage.removeItem(shortcutCart.cartKey);
+    }
+}

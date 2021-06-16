@@ -3,6 +3,7 @@ const apiEndpoint = "http://192.168.1.8/api/bolus-calc";
 
 const exampleDataset = [
     {
+        id: 1,
         name: "Slice of pizza",
         carbs: 28,
         img: "entry_pizza_140621.jpg"
@@ -20,6 +21,7 @@ loadShortcuts("local");
  * @param {*} query search term
  */
 async function loadShortcuts(source, query) {
+    showCorrectShortcutHeadingBar();
     // Clear any cards in the holder div
     document.querySelector('#shortcutHolder').classList.remove("shortcutHolderLoaderMod");
     document.querySelector('#shortcutHolder').innerHTML = "";
@@ -65,7 +67,7 @@ async function loadShortcuts(source, query) {
                 cardHolder = document.createElement("div");
                 cardHolder.classList.add("card-holder");
             }
-            cardHolder.appendChild(createCard(shortcut));
+            cardHolder.appendChild(createCard(shortcut, dataSource));
             count++;
             if(count > 1) {
                 document.querySelector('#shortcutHolder').appendChild(cardHolder);
@@ -141,11 +143,18 @@ function removeLoader() {
 function createCard(shortcut) {
     const card = document.createElement("div");
     card.classList.add("card");
+    card.id = `item_${shortcut.id}_${dataSource}`;
 
     const head = document.createElement("div");
     head.classList.add("head");
     const heading_container = document.createElement("p");
-    heading_container.innerText = shortcut.carbs + " Carbs";
+
+    let qty = 0;
+    if(shortcutCart.getItem(shortcut.id, dataSource)) {
+        qty = shortcutCart.getItem(shortcut.id, dataSource).qty;
+    }
+
+    heading_container.innerText = `${shortcut.carbs} Carbs ${qty ? "(" + qty + "x)" : ""}`;
     head.appendChild(heading_container);
 
     const thumbnail = document.createElement("div");
@@ -155,15 +164,28 @@ function createCard(shortcut) {
     const name = document.createElement("p");
     name.innerText = shortcut.name;
     
+
     const footer = document.createElement("div");
-    footer.classList.add("footer");
+
     const icon = document.createElement("i");
     icon.classList.add("fas");
     icon.classList.add("fa-plus");
     footer.appendChild(icon);
+
     const footer_button_container = document.createElement("p");
     footer_button_container.innerText = "Add";
+
+    footer.setAttribute("onclick", `modifyItem(${shortcut.carbs}, ${shortcut.id}, "${dataSource}",)`);
+    footer.classList.add("footer");
+
+    if(qty) {
+        footer.classList.add("selected");
+        footer_button_container.textContent = "Deduct";
+        icon.classList.replace("fa-plus", "fa-minus");
+    }
+
     footer.appendChild(footer_button_container)
+
 
     card.appendChild(head);
     card.appendChild(thumbnail);
@@ -180,4 +202,63 @@ function searchShortcuts() {
     const searchInput = prompt("Enter a search term");
     document.querySelector('#shortcutHolder').innerHTML = "";
     loadShortcuts(dataSource, searchInput);
+}
+
+function modifyItem(carbs, id, sourceOfData) {
+    const footer = document.querySelector(`#item_${id}_${sourceOfData}`).querySelector('.footer');
+    let qty = prompt(footer.classList.contains("selected") ? "How many would you like to deduct?" : "How many would you like to add?");
+    if(qty !== null && qty !== NaN && /^\d+$/.test(qty) && parseFloat(qty) > 0) { 
+        qty = parseFloat(qty);
+        const entry = {
+            carbs,
+            id,
+            sourceOfData,
+            qty
+        }
+
+        footer.classList.contains("selected") ? shortcutCart.modifyCartEntry("minus", entry) : shortcutCart.modifyCartEntry("add", entry);
+
+        const action = footer.querySelector("p");
+        const icon = footer.querySelector("i");
+
+        let db_qty = 0;
+        if(shortcutCart.getItem(id, sourceOfData)) {
+            db_qty = shortcutCart.getItem(id, sourceOfData).qty;
+        }
+        document.querySelector(`#item_${id}_${sourceOfData}`).querySelector(".head > p").innerText = `${carbs} Carbs ${db_qty ? "(" + db_qty + "x)" : ""}`
+
+        if(shortcutCart.checkIfInCart(id, sourceOfData)) {
+            footer.classList.add("selected");
+            action.textContent = "Deduct";
+            icon.classList.replace("fa-plus", "fa-minus");
+        } else {
+            footer.classList.remove("selected");
+            action.textContent = "Add";
+            icon.classList.replace("fa-minus", "fa-plus");
+        }
+    } else {
+        if(qty !== null) {
+            alert("Please enter a valid number e.g. 4")
+        }
+    }
+
+    showCorrectShortcutHeadingBar();
+}
+
+function showCorrectShortcutHeadingBar() {
+    document.querySelector('#shortcut_carb_amt').textContent = shortcutCart.totalCarbs();
+
+    if(shortcutCart.totalCarbs() > 0) {
+        document.querySelector("#quick_menu_checkout").style.display = "flex";
+        document.querySelector("#quick_menu_return").style.display = "none";
+    } else {
+        document.querySelector("#quick_menu_return").style.display = "flex";
+        document.querySelector("#quick_menu_checkout").style.display = "none";
+    }
+}
+
+function checkoutShortcuts() {
+    changeCarbs(shortcutCart.totalCarbs());
+    shortcutCart.clearCart();
+    showQuickMenu(false);
 }

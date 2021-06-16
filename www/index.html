@@ -74,28 +74,29 @@
                         document.querySelector(`#tab_database_btn`).classList.remove('active');
                         
                         document.querySelector("#addShortcut").removeAttribute("disabled");
+
+                        loadShortcuts("local");
                     } else if (tab === "tab_database") {
                         document.querySelector('#tab_database_btn').classList.add('active');
                         document.querySelector(`#tab_saved_btn`).classList.remove('active');
 
                         // if databse tab do not show the add button
                         document.querySelector("#addShortcut").setAttribute("disabled", true);
+
+                        loadShortcuts("api");
                     }
                 }
             </script>
         </div>
 
         <div style="flex: 1; width: 85%; overflow-y: scroll;" id="shortcutHolder">
-     
+            
         </div>
 
         <div class="tab_nav" style="margin-bottom: 5%;">
             <button class="tab_button" id="addShortcut"><i class="fas fa-plus"></i> <p>Add Shortcut</p> <span><!-- Filler --></span></button>
             <button class="tab_button" onclick="searchShortcuts()"><i class="fas fa-search"></i> <p>Search</p> <span><!-- Filler --></span></button>
         </div>
-        
-        
-
     </div>
     <div class="horizCentre fixed-panel" id="modifierListMenu" style="display: none;">
         <div onclick="showModifierListMenu(false);" class="menu-container fixed-nav-button">

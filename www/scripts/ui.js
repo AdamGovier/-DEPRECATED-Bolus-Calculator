@@ -1,3 +1,9 @@
+// report all fatal errors to a popup on device as the mobile devices do not have consoles
+window.onerror = function(msg, url, linenumber) {
+    alert(`Error message: ${msg}\nURL: ${url}\nLine Number: ${linenumber}\nPlease report this to dev@adamgovier.co.uk`);
+    return true;
+}
+
 let errorInProgress = false;
 
 // Onload media queries, virtual keyboard Workaround.

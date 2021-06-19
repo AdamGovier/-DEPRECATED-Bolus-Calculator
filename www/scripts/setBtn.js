@@ -6,12 +6,12 @@
  */
 function setBtn(disabled, text) { 
     if(disabled) {
-        document.querySelector("#calc-action-button").setAttribute("disabled", disabled);
+        document.querySelector(".calc-action-button").setAttribute("disabled", disabled);
     } else {
-        document.querySelector("#calc-action-button").removeAttribute("disabled");
+        document.querySelector(".calc-action-button").removeAttribute("disabled");
     }
     
-    document.querySelector("#calc-action-button").value = text;
+    document.querySelector(".calc-action-button").value = text;
 }
 
 let documentChanges = false;

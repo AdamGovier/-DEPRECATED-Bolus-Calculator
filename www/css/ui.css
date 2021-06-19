@@ -193,7 +193,7 @@ textarea:focus, input:focus, button:focus{
     border: 1px solid var(--text-colour-main);
 }
 
-#calc-action-button {
+.calc-action-button {
     background-color: var(--action-colour);
     color: var(--text-colour-main);
 
@@ -570,9 +570,32 @@ legend {
     margin-top: 15px;
     border-radius:5px;
     width: 80%;
+    display: flex;
+    justify-content:flex-end; /* testing portion sizes */
+    align-items: flex-end;
     height: 80px;
     background-image: url('../data/ShortcutLibrary/thumbnails/entry_pizza_140621.jpg');
     background-size: cover;
+}
+
+.card .thumbnail > p {
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 20px;
+    padding: 2px 5px;
+    margin: 2px;
+    font-size: 12px;
+}
+
+.card .delBtnShrtcut {
+    background-color: var(--main-bg-colour);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 4px 0;
+}
+
+.card .delBtnShrtcut i {
+    margin-right: 10px;
 }
 
 .card .footer {
@@ -594,6 +617,9 @@ legend {
 
 .card > p {
     height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 60%;
     text-align: center;
     overflow: none;
@@ -634,4 +660,34 @@ legend {
 
 #loaderContainer > p {
     margin-bottom: 100px;
+}
+
+.shortcutEditor_thumb_Holder {
+    margin-top: 35px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.shortcutEditor_thumb {
+    width: 80vw;
+    height: 45vw;
+    background-image: url("../Data/ShortcutLibrary/thumbnails/entry_Pizza_140621.jpg");
+    background-size: cover;
+    border-radius: 5%;
+}
+
+.shortcutEditor_thumb_icon_holder {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.shortcutEditor_thumb_icon_holder > h1 {
+    margin-block-start: 0;
+    margin-block-end: 0;
 }

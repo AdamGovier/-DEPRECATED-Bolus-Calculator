@@ -9,11 +9,11 @@ let errorInProgress = false;
 // Onload media queries, virtual keyboard Workaround.
 if(window.innerHeight <= 700 && window.innerHeight > 568) {
     if(document.querySelector('#button-2nd')) {
-        document.querySelector('style').innerText = ".dose {margin-top: 27px;} #calc-action-button {margin-top: 23px;}";
+        document.querySelector('style').innerText = ".dose {margin-top: 27px;} .calc-action-button {margin-top: 23px;}";
     }
 } else if(window.innerHeight <= 568) {
     if(document.querySelector('#button-2nd')) {
-        document.querySelector('style').innerText = ".button-2nd {margin-top: 10px;} .dose {margin-top: 10px; margin-bottom: 0;} #calc-action-button {margin-top: 10px;}";
+        document.querySelector('style').innerText = ".button-2nd {margin-top: 10px;} .dose {margin-top: 10px; margin-bottom: 0;} .calc-action-button {margin-top: 10px;}";
     }
 }
 

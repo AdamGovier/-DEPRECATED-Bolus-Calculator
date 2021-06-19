@@ -62,7 +62,7 @@
         </div>
         <p style="margin-top:30px; width: 90%; text-align: center;">By clicking "I accept" you are agreeing to our Terms & Conditions and our Privacy Policy</p>
         <form style="display: flex; justify-content: center; margin-top:0;"> 
-            <input style="margin-top:30px !important;" id="calc-action-button" class="save-button" type="submit" value="Accept All">
+            <input style="margin-top:30px !important;" class="calc-action-button save-button" type="submit" value="Accept All">
         </form>
         <script>
             const legalVersion = 1.2; // Current legal version change this to make the user re-accept the legal documents.
@@ -70,11 +70,11 @@
 
             if(userData.get("accepted-legal")) {
                 if(userData.get("accepted-legal-version") == legalVersion) { // already accepted
-                    document.querySelector('#calc-action-button').value = `Accepted ${userData.get("accepted-legal-date")}`;
-                    document.querySelector('#calc-action-button').setAttribute("disabled", true)
+                    document.querySelector('.calc-action-button').value = `Accepted ${userData.get("accepted-legal-date")}`;
+                    document.querySelector('.calc-action-button').setAttribute("disabled", true)
                 } else { // updated legal
                     alert(`Our legal documents have been updated on the ${updateDay}, please accept them.`);
-                    document.querySelector('#calc-action-button').value = `Accept Updated Terms`;
+                    document.querySelector('.calc-action-button').value = `Accept Updated Terms`;
                 }
             }
 
@@ -83,8 +83,8 @@
                 userData.save("accepted-legal-version", legalVersion);
                 userData.save("accepted-legal-date", new Date().toLocaleString('default', { month: 'short' }) + " " + new Date().getFullYear());
                 userData.save("accepted-legal", true);
-                document.querySelector('#calc-action-button').value = `Accepted ${userData.get("accepted-legal-date")}`;
-                document.querySelector('#calc-action-button').setAttribute("disabled", true);
+                document.querySelector('.calc-action-button').value = `Accepted ${userData.get("accepted-legal-date")}`;
+                document.querySelector('.calc-action-button').setAttribute("disabled", true);
                 if(!userData.get("returningUser")) {
                     window.location = "doseSettings.html";
                 }

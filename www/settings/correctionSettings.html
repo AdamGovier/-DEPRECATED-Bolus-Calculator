@@ -80,7 +80,7 @@
                         }
 
                         document.querySelector("#options").style.display = "block";
-                        document.querySelector("#calc-action-button").style.display = "block";
+                        document.querySelector(".calc-action-button").style.display = "block";
 
                         document.querySelectorAll('.bloodSystem').forEach(element => {
                             element.innerText = userData.get("bloodSystem");
@@ -159,7 +159,7 @@
                 </div>
             </div>
 
-            <input id="calc-action-button" class="save-button" type="submit" value="Save">
+            <input class="calc-action-button save-button" type="submit" value="Save">
         </form>
     </main>
     <div class="horizCentre fixed-panel" id="correctionFactorCalcPanel" style="display: none;">
@@ -193,7 +193,7 @@
                 </div>
             </div>
 
-            <input id="calc-action-button" class="save-button" type="submit" value="Calculate">
+            <input class="calc-action-button save-button" type="submit" value="Calculate">
         </form>
         <script>
             document.querySelector('#correctionCalcForm').addEventListener('submit', (event) => {

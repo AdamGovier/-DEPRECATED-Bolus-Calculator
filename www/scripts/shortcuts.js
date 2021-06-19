@@ -1,12 +1,13 @@
 let dataSource = "local";
-const apiEndpoint = "http://192.168.1.8/api/bolus-calc";
+const apiEndpoint = "http://192.168.1.39/api/bolus-calc";
 
 const exampleDataset = [
     {
         id: 1,
         name: "Slice of pizza",
         carbs: 28,
-        img: "entry_pizza_140621.jpg"
+        img: "entry_pizza_140621.jpg",
+        portionSize: 146
     },
 ]
 
@@ -154,43 +155,56 @@ function createCard(shortcut) {
         qty = shortcutCart.getItem(shortcut.id, dataSource).qty;
     }
 
-    heading_container.innerText = `${shortcut.carbs} Carbs ${qty ? "(" + qty + "x)" : ""}`;
+    heading_container.innerText = `${shortcut.carbs}g of Carbs ${qty ? "(" + qty + "x)" : ""}`;
     head.appendChild(heading_container);
 
     const thumbnail = document.createElement("div");
     thumbnail.classList.add("thumbnail");
     thumbnail.style.backgroundImage = dataSource === "local" ? `url('Data/ShortcutLibrary/thumbnails/${shortcut.img}')` : `url('${apiEndpoint}/shortcut-thumbnails/${shortcut.img}')`;
+    
+    if(shortcut.portionSize) {
+        const portionSize = document.createElement("p");
+        portionSize.textContent = `${shortcut.portionSize}g`;
+        thumbnail.appendChild(portionSize)
+    }
 
     const name = document.createElement("p");
     name.innerText = shortcut.name;
-    
-
-    const footer = document.createElement("div");
-
-    const icon = document.createElement("i");
-    icon.classList.add("fas");
-    icon.classList.add("fa-plus");
-    footer.appendChild(icon);
-
-    const footer_button_container = document.createElement("p");
-    footer_button_container.innerText = "Add";
-
-    footer.setAttribute("onclick", `modifyItem(${shortcut.carbs}, ${shortcut.id}, "${dataSource}",)`);
-    footer.classList.add("footer");
-
-    if(qty) {
-        footer.classList.add("selected");
-        footer_button_container.textContent = "Deduct";
-        icon.classList.replace("fa-plus", "fa-minus");
-    }
-
-    footer.appendChild(footer_button_container)
-
 
     card.appendChild(head);
     card.appendChild(thumbnail);
     card.appendChild(name);
-    card.appendChild(footer);
+    if(dataSource === "local") card.appendChild(createFooterButton("delBtnShrtcut", "Edit", "fa-edit", qty));
+    card.appendChild(createFooterButton("footer", "Add", "fa-plus", qty));
+
+    function createFooterButton(className, text, iconName, qty) {
+        const footer = document.createElement("div");
+
+        const icon = document.createElement("i");
+        icon.classList.add("fas");
+        icon.classList.add(iconName);
+        footer.appendChild(icon);
+    
+        const footer_button_container = document.createElement("p");
+        footer_button_container.innerText = text;
+        
+        if(className === "delBtnShrtcut") {
+            footer.setAttribute("onclick", `showEditMenu(true)`);
+        } else {
+            footer.setAttribute("onclick", `modifyItem(${shortcut.carbs}, ${shortcut.id}, "${dataSource}",)`);
+        }
+        footer.classList.add(className);
+    
+        if(qty && className === "footer") {
+            footer.classList.add("selected");
+            footer_button_container.textContent = "Deduct";
+            icon.classList.replace("fa-plus", "fa-minus");
+        }
+    
+        footer.appendChild(footer_button_container)
+
+        return footer;
+    }
 
     return card;
 }

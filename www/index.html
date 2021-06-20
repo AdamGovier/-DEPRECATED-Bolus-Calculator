@@ -99,12 +99,12 @@
         </div>
 
         <div class="tab_nav" style="margin-bottom: 5%;">
-            <button class="tab_button" id="addShortcut"><i class="fas fa-plus"></i> <p>Add Shortcut</p> <span><!-- Filler --></span></button>
+            <button class="tab_button" id="addShortcut" onclick="showEditMenu(true);"><i class="fas fa-plus"></i> <p>Add Shortcut</p> <span><!-- Filler --></span></button>
             <button class="tab_button" onclick="searchShortcuts()"><i class="fas fa-search"></i> <p>Search</p> <span><!-- Filler --></span></button>
         </div>
     </div>
 
-    <div class="fixed-panel horizCentre" id="shortcutEditor" style="display: none;">
+    <div class="fixed-panel horizCentre" id="shortcutEditor" style="display: flex;">
         <div id="quick_menu_return" onclick="showEditMenu(false)" class="menu-container fixed-nav-button">
             <h5><i class="fas fa-times"></i> Cancel</h5>
         </div>
@@ -115,13 +115,14 @@
                 </div>
             </div>
         </div>
-        <form action="" style="width: 80%; margin-top: 35px;">
+        <form id="shortcutEditorForm" action="" style="width: 80%; margin-top: 35px;">
+            <input style="display: none;" name="shortcut_edit" type="text">
             <div class="option" style="margin-top: 0;">
                 <div class="settingLabel">
                     <h4 style="float:none;">Shortcut Name</h4>
                 </div>
                 <div class="sideBySideTextbox">
-                    <input class="textbox" type="text" value="Slice of pizza" placeholder="E.g. Slice of pizza">
+                    <input class="textbox" name="shortcut_name" type="text" placeholder="E.g. Slice of pizza">
                 </div>
             </div>
             <div class="option" style="margin-top: 25px;">
@@ -129,7 +130,7 @@
                     <h4 style="float:none;">Carbohydrates</h4>
                 </div>
                 <div class="sideBySideTextbox">
-                    <input class="textbox" type="number" value="28" placeholder="E.g. 28">
+                    <input class="textbox" name="shortcut_carbs" type="number" placeholder="E.g. 28">
                     <label style="margin-right: 10px;">g</label>
                 </div>
             </div>
@@ -138,14 +139,16 @@
                     <h4 style="float:none;">Portion Size (Optional)</h4>
                 </div>
                 <div class="sideBySideTextbox">
-                    <input class="textbox" type="number" value="145" placeholder="E.g. 145">
+                    <input class="textbox"  name="shortcut_portion" type="number" placeholder="E.g. 145">
                     <label style="margin-right: 10px;">g</label>
                 </div>
             </div>
             <div style="width: 100%; display: flex; justify-content: center; margin-top: 0px;">
                 <input class="calc-action-button save-button" type="submit" value="Save">
             </div>
-            
+            <div style="width: 100%; position: fixed; bottom: 0; left:0; background-color: var(--action-colour-darker); text-align: center; display: flex; justify-content: center; align-items: center;">
+                <h2 style="margin-block-start: 0; margin-block-end: 0; padding: 15px"><i style="margin-right: 5px;" class="far fa-trash-alt"></i> <span>Shortcut</span></h2>
+            </div>
         </form>
     </div>
 
@@ -195,13 +198,30 @@
                     }
                 }
 
-                function showEditMenu(bool) {
-                    if(bool) {
+                /**
+                 * @description Shows the edit/create shortcut menu
+                 * @param {Boolean} show show or hide menu
+                 * @param {Boolean} id provide an ID if you wish to edit a shortcut
+                */
+                function showEditMenu(show, id) {
+                    if(show) {
                         document.querySelector('#shortcutEditor').style.display = "flex";
+                        const shortcutForm = document.querySelector('#shortcutEditorForm');
+                        if(id) {
+                            const shortcut = userData.getShortcut(id);
+                            shortcutForm.shortcut_edit.setAttribute("tag", id); // Absolutely no clue why using .value or setAttribute("value", edit) does not work ????????? work around until I find out what is the issue.
+                            shortcutForm.shortcut_name.value = shortcut.name;
+                            shortcutForm.shortcut_carbs.value = shortcut.carbs;
+                            shortcutForm.shortcut_portion.value = shortcut.portionSize;
+                        } else {
+                            shortcutForm.shortcut_edit.removeAttribute("tag");
+                            shortcutForm.shortcut_name.value = "";
+                            shortcutForm.shortcut_carbs.value = "";
+                            shortcutForm.shortcut_portion.value = "";
+                        }
                     } else {
                         document.querySelector('#shortcutEditor').style.display = "none";
                     }
-                    
                 }
 
                 // Gathers a list of modifiers from localStorage and then renders a list of them in the modifier window.

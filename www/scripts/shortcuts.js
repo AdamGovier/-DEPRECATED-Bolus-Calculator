@@ -1,18 +1,6 @@
 let dataSource = "local";
 const apiEndpoint = "http://192.168.1.39/api/bolus-calc";
 
-const exampleDataset = [
-    {
-        id: 1,
-        name: "Slice of pizza",
-        carbs: 28,
-        img: "entry_pizza_140621.jpg",
-        portionSize: 146
-    },
-]
-
-userData.save("shortcuts", JSON.stringify(exampleDataset));
-
 //load on launch
 loadShortcuts("local");
 
@@ -55,14 +43,14 @@ async function loadShortcuts(source, query) {
     
 
     // Make sure that if user clicks to local before api has loaded it wont overide.
-    if(dataSource === source) {
+    if(dataSource === source && shortcuts) {
         if(query) {
             const searchHeader = document.createElement("h4");
             searchHeader.textContent = `Search results for ${query}`;
             searchHeader.style.marginTop = "20px";
             document.querySelector('#shortcutHolder').appendChild(searchHeader);
         }
-    
+        
         shortcuts.forEach(shortcut => {
             if(count === 0) {
                 cardHolder = document.createElement("div");
@@ -174,10 +162,10 @@ function createCard(shortcut) {
     card.appendChild(head);
     card.appendChild(thumbnail);
     card.appendChild(name);
-    if(dataSource === "local") card.appendChild(createFooterButton("delBtnShrtcut", "Edit", "fa-edit", qty));
-    card.appendChild(createFooterButton("footer", "Add", "fa-plus", qty));
+    if(dataSource === "local") card.appendChild(createFooterButton("delBtnShrtcut", "Edit", "fa-edit", qty, shortcut.id));
+    card.appendChild(createFooterButton("footer", "Add", "fa-plus", qty, shortcut.id));
 
-    function createFooterButton(className, text, iconName, qty) {
+    function createFooterButton(className, text, iconName, qty, id) {
         const footer = document.createElement("div");
 
         const icon = document.createElement("i");
@@ -189,7 +177,7 @@ function createCard(shortcut) {
         footer_button_container.innerText = text;
         
         if(className === "delBtnShrtcut") {
-            footer.setAttribute("onclick", `showEditMenu(true)`);
+            footer.setAttribute("onclick", `showEditMenu(true, ${id})`);
         } else {
             footer.setAttribute("onclick", `modifyItem(${shortcut.carbs}, ${shortcut.id}, "${dataSource}",)`);
         }
@@ -275,4 +263,26 @@ function checkoutShortcuts() {
     changeCarbs(shortcutCart.totalCarbs());
     shortcutCart.clearCart();
     showQuickMenu(false);
+}
+document.querySelector('#shortcutEditorForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = document.querySelector('#shortcutEditorForm');
+    const data = {
+        name: form.shortcut_name.value,
+        carbs: parseFloat(form.shortcut_carbs.value),
+        portionSize: parseFloat(form.shortcut_portion.value),
+        img: "entry_pizza_140621.jpg",
+        id: userData.incShortcutID()
+    }
+    if(form.shortcut_edit.getAttribute("tag")) { // temp workaround cannot apply value to shortcut_edit for some unknown reason?
+        const id = form.shortcut_edit.getAttribute("tag");
+        userData.deleteShortcut(id);
+    }
+    userData.addShortcut(data);
+    showEditMenu(false);
+    showQuickMenu(true);
+});
+
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
 }

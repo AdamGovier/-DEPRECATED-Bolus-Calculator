@@ -102,7 +102,40 @@ const userData = {
 
         currentEntries.push(data);
         localStorage.setItem("diaryEntries", JSON.stringify(currentEntries));
-    }
+    },
+    addShortcut : data => {
+        let currentEntries = [];
+
+        if(localStorage.getItem("shortcuts")) {
+            currentEntries = JSON.parse(localStorage.getItem("shortcuts"));
+        }
+
+        currentEntries.push(data);
+        localStorage.setItem("shortcuts", JSON.stringify(currentEntries));
+    },
+    incShortcutID : () => {
+        let count = 0;
+        if(localStorage.getItem("shortcutID")) {
+            count = localStorage.getItem("shortcutID");
+        }
+        count++; // Intentionally starting at 1 so no boolean logic is messed up
+        localStorage.setItem("shortcutID", count);
+        return count;
+    },
+    getShortcut : (id) => {
+        const currentShortcuts = JSON.parse(localStorage.getItem("shortcuts"));
+        const shortcut = currentShortcuts.filter(shortcut => {
+            if(shortcut.id === id) return shortcut;
+        });
+        return shortcut[0];
+    },
+    deleteShortcut : id => {
+        const currentShortcuts = JSON.parse(localStorage.getItem("shortcuts"));
+        const updatedShortcuts = currentShortcuts.filter(shortcut => {
+            if(shortcut.id != id) return shortcut;
+        });
+        localStorage.setItem("shortcuts", JSON.stringify(updatedShortcuts));
+    },
 };
 
 const shortcutCart = {

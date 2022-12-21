@@ -1,4 +1,4 @@
-#DEPRECATED
+# DEPRECATED
 Bolus Calculator was refactored to use the front-end framework Vue.js 
 https://github.com/AdamGovier/Vue-3-Fast-Acting-Insulin-Calculator
 

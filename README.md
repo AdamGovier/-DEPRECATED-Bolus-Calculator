@@ -1,3 +1,7 @@
+#DEPRECATED
+Bolus Calculator was refactored to use the front-end framework Vue.js 
+https://github.com/AdamGovier/Vue-3-Fast-Acting-Insulin-Calculator
+
 # Bolus-Calculator
 Open Source fast acting insulin (Bolus) dosage calculator app.
 
